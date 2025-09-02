@@ -14,6 +14,16 @@
     <link rel="stylesheet" href="../../styles/backoffice.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <?php
+      $vista = $_GET['view'] ?? 'inicio';
+      if ($vista === 'proyectos') {
+        echo '<link rel="stylesheet" href="../../styles/proyectosBackOffice.css">';
+      } elseif ($vista === 'tecnologias') {
+        echo '<link rel="stylesheet" href="../../styles/tecnologiasBackOffice.css">';
+      } else {
+        echo '<link rel="stylesheet" href="../../styles/inicioBackOffice.css">';
+      }
+    ?>
   </head>
   <body>
     <header id="seccion-header">

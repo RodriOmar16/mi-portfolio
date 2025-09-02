@@ -1,14 +1,6 @@
 <?php
-  echo "Hola mundo desde inicio";
 ?>
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Back Office - Inicio</title>
-  </head>
-  <body>
-    
-  </body>
-</html>
+<div class="contenedor-principal">
+  <button class="btn btn-outline-primary" onclick="location.href='back_office.php?view=proyectos'"><i class="fa-solid fa-list"></i> Proyectos</button>
+  <button class="btn btn-outline-primary" onclick="location.href='back_office.php?view=tecnologias'"><i class="fa-brands fa-react"></i> Tecnologias </button>
+</div>
