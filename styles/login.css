@@ -1,0 +1,34 @@
+*{
+  box-sizing: border-box;
+}
+.contenedor-login{
+  width: 100%;
+  /*min-height: 545px;*/
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.contenedor-form{
+  padding: 50px;
+  margin: 5px;
+  width: 400px;
+  max-width: 500;
+  /*border: 1px solid #b7b9ba;
+  border-radius: 25px;*/
+}
+.contenedor-encabezado-form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 450px) {
+  .contenedor-form{
+    padding: 50px 30px;
+    width: 350px;
+    max-width: 500;
+  }
+}
