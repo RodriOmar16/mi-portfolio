@@ -55,9 +55,9 @@
       <?php
         $vista = $_GET['view'] ?? 'inicio';
         if ($vista === 'proyectos') {
-          include 'proyectos.php';
+          include '../proyectos/proyectos.php';
         } elseif ($vista === 'tecnologias') {
-          include 'tecnologias.php';
+          include '../tecnologias/tecnologias.php';
         } else {
           include 'inicio.php';
         }

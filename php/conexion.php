@@ -1,7 +1,7 @@
 <?php
   $host = "localhost";
   $usuario = "root";
-  $clave = ""; // o tu contraseña si la configuraste
+  $clave = "";
   $bd = "portfolio";
 
   $conn = new mysqli($host, $usuario, $clave, $bd, 3307);
