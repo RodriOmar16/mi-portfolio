@@ -1,0 +1,21 @@
+const BASE_URL = "http://localhost:8080/portfolio/php/";
+
+export const apiFetch = async (endpoint, options={}) => {
+  try {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && {Authorization: `Bearer ${token}` })
+    }
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      headers,
+      ...options, // Extiende con las opciones proporcionadas (método, body, etc.)
+    });
+
+    return await response.json();
+
+  } catch (error) {
+    console.log("Error al realizar la peticion: ", error);
+    return { resultado:0, msj:"Error de conexión con el servidor." } 
+  }
+};
