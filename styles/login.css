@@ -24,6 +24,10 @@
   justify-content: center;
   align-items: center;
 }
+/*loading*/
+#modal-espera .modal-content{
+  flex-direction: row ;
+}
 
 @media (max-width: 450px) {
   .contenedor-form{
