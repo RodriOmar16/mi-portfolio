@@ -90,12 +90,8 @@
 /*vista - proyectos*/
 .contenedor-seccion-filtros{
   min-height: 170px;
-  /*padding: 25px;*/
-  margin-bottom: 10px;
-
-}
-.contenedor-filtros{
-
+  padding: 0px 15px;
+  margin: 10px;
 }
 .contenedor-button-buscar{
   display: flex;
@@ -106,6 +102,66 @@
 .icono-filtros{
   font-size: 22px;
 }
+.contenedor-resultados{
+  padding: 0px 15px;
+  margin: 10px;
+}
+#buttonBuscar{
+  width: 110px;
+}
+.button-nuevo{
+  font-size: 40px;
+}
+.modal-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  position: relative;
+  z-index: 2;
+  background-color: #fff !important; /* ← fuerza el color blanco */
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 500px;
+}
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* fondo gris */
+  z-index: 1;
+}
+
+/*.modal-content {
+  position: relative;
+  z-index: 2;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 500px;
+}*/
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
 
 @media(max-width:450px){
   .barra-nav {

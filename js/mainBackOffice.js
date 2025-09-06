@@ -4,6 +4,7 @@ const cargarInfoUser = () => {
   encabezado.textContent = name;
 };
 cargarInfoUser();
+
 //---------------------------------------------------
 const contenedor = document.getElementById("contenedor-vistas");
 const enlaces    = document.querySelectorAll("nav a");
@@ -23,9 +24,9 @@ export const cargarVistas = async (nombreVista) => {
     if(scriptPrevio) scriptPrevio.remove();
 
     const script = document.createElement("script");
-    script.type = "module";
-    script.src  = `../js/main${nombreVista.charAt(0).toUpperCase() + nombreVista.slice(1)}.js?ts=${Date.now()}`;
-    script.id   = scriptId;
+    script.type  = "module";
+    script.src   = `../js/main${nombreVista.charAt(0).toUpperCase() + nombreVista.slice(1)}.js?ts=${Date.now()}`;
+    script.id    = scriptId;
 
     document.body.appendChild(script);
   } catch (error) {

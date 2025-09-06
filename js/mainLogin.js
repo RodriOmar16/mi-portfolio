@@ -17,29 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
     pass.value = null;
   });
 });
-
-/*const iniciarValidarLogin = async (user, password) => {
-  mostrarCarga(true,1);
-  const res = await getUser({user, password})
-  mostrarCarga(false,2);
-  if(res.resultado == 0){
-    document.getElementById("mensajeError").classList.remove("d-none");
-    document.getElementById("mensajeError").textContent = res.msj;
-  }else{
-    localStorage.setItem("usuario", res.usuario);
-    //redireccionar al backOffice.html
-    window.location.href = "../html/backOffice.html";
-  }
-};*/
 const iniciarValidarLogin = async (user, password) => {
   try {
-    mostrarCarga(true, 1);
+    mostrarCarga(true);
     const res = await getUser({ user, password });
-    
-
-    setTimeout(() => {
-      mostrarCarga(false, 2);
-    }, 10000);
+    mostrarCarga(false);
 
     if (res.resultado == 0) {
       const divMensaje = document.getElementById("mensajeError");
@@ -48,13 +30,14 @@ const iniciarValidarLogin = async (user, password) => {
       console.log("icono: ", icono)
       
       divMensaje.classList.remove("d-none");
-      divMensaje.textContent = res.msj;
+      divMensaje.innerHTML = `<i class="fa-solid fa-circle-xmark me-2"></i> ${res.msj}`;
+
     } else {
       localStorage.setItem("usuario", res.usuario);
       window.location.href = "../html/backOffice.html";
     }
   } catch (error) {
-    mostrarCarga(false, 3);
+    mostrarCarga(false);
     console.error("Error en la validación:", error);
     document.getElementById("mensajeError").classList.remove("d-none");
     document.getElementById("mensajeError").textContent = "Error de conexión con el servidor.";
