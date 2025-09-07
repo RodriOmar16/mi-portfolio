@@ -25,13 +25,9 @@ const iniciarValidarLogin = async (user, password) => {
 
     if (res.resultado == 0) {
       const divMensaje = document.getElementById("mensajeError");
-      console.log("divMensaje: ", divMensaje)
-      const icono = document.querySelector("#mensajeError i");
-      console.log("icono: ", icono)
-      
+
       divMensaje.classList.remove("d-none");
       divMensaje.innerHTML = `<i class="fa-solid fa-circle-xmark me-2"></i> ${res.msj}`;
-
     } else {
       localStorage.setItem("usuario", res.usuario);
       window.location.href = "../html/backOffice.html";

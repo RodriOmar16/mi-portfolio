@@ -6,12 +6,9 @@
         <button 
           id="button-nuevo" 
           class="btn p-0 border-0 bg-transparent" 
-          title="Nuevo Proyecto"
-          >
-          <!-- data-bs-toggle="modal" data-bs-target="#modal-nuevo1" data-bs-whatever="" -->
+          title="Nuevo Proyecto">
           <i class="fa-solid fa-circle-plus text-success button-nuevo" ></i>
         </button>
-        
       </div>
       <form class="">
         <div class="row">
@@ -32,9 +29,16 @@
             <input type="date" class="form-control" id="fechaHasta">
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
+            <label for="tecnologias" class="form-label">Tecnologias</label>
+            <select name="tecnologias" id="tecnologias" class="form-select">
+              <!-- Se cargan de form dinámicas -->
+            </select>
+          </div>
+          <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="estados" class="form-label">Estado</label>
             <select name="estados" id="estados" class="form-select">
-              <!--options dinamicos-->
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
             </select>
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6 contenedor-button-buscar">
@@ -97,23 +101,44 @@
       </table>
     </div>
   </div> 
-  <!-- componentes dialog -->
 
+  <!-- componentes dialog -->
   <div id="modal-nuevo-proyecto" class="modal-custom d-none">
     <div class="modal-overlay"></div>
     <div class="modal-content">
       <h5 class="mb-0">Nuevo Proyecto</h5>
       <hr>
       <form id="form-nuevo-proyecto">
-        <input type="text" name="nombre" placeholder="Nombre del proyecto" required>
-        <textarea name="descripcion" placeholder="Descripción"></textarea>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <label for="nombre" class="form-label">Nombre </label>
+            <input type="text" class="form-control" id="nombre-nuevo">
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <label for="fechaDesde" class="form-label">Fecha desde</label>
+            <input type="date" class="form-control" id="fechaDesde-nuevo">
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <label for="fechaHasta" class="form-label">Fecha hasta</label>
+            <input type="date" class="form-control" id="fechaHasta-nuevo">
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <label for="estados" class="form-label">Estado</label>
+            <select name="estados" id="estado-nuevo" class="form-select">
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label for="nombre" class="form-label">Descripción </label>
+            <textarea name="descripcion" id="descripcion-nuevo" class="form-control"></textarea>
+          </div>
+        </div>
         <div class="modal-actions">
-          <button type="submit" class="btn btn-success">Guardar cambios</button>
           <button type="button" class="btn btn-secondary" id="cancelarModal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Guardar cambios</button>
         </div>
       </form>
     </div>
   </div>
-
-
 </section>
