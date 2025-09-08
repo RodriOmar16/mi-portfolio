@@ -10,7 +10,7 @@
           <i class="fa-solid fa-circle-plus text-success button-nuevo" ></i>
         </button>
       </div>
-      <form class="">
+      <form class="form-buscar-proyectos">
         <div class="row">
           <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="id" class="form-label">Id</label>
@@ -41,7 +41,7 @@
               <option value="Inactivo">Inactivo</option>
             </select>
           </div>
-          <div class="col-lg-2 col-md-4 col-sm-6 contenedor-button-buscar">
+          <div class="col-12 contenedor-button-buscar mt-3">
             <button title="Buscar" class="btn btn-primary" id="buttonBuscar"> <i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
           </div>
         </div>
@@ -59,6 +59,7 @@
             <th scope="col">Duración (meses)</th>
             <th scope="col">Fecha Inicio</th>
             <th scope="col">Fecha Hasta</th>
+            <th scope="col">Tecnología</th>
             <th scope="col">Estado</th>
             <th scope="col">Acciones</th>
           </tr>
@@ -70,6 +71,7 @@
             <td>Otto</td>
             <td>@mdo</td>
             <td>@mdo</td>
+            <td>sdfsdf</td>
             <td>@mdo</td>
             <td>@mdo</td>
             <td>
@@ -84,8 +86,12 @@
             <td>@fat</td>
             <td>@fat</td>
             <td>@fat</td>
+            <td>sdfsdf</td>
             <td>@fat</td>
-            <td>@fat</td>
+            <td>
+              <i type="button" class="fa-solid fa-pencil me-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"></i>
+              <i type="button" class="fa-solid fa-ban text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Inhabilitar"></i>
+            </td>
           </tr>
           <tr>
             <th scope="row">3</th>
@@ -95,7 +101,11 @@
             <td>@social</td>
             <td>@social</td>
             <td>@social</td>
-            <td>@social</td>
+            <td>sdfsdf</td>
+            <td>
+              <i type="button" class="fa-solid fa-pencil me-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"></i>
+              <i type="button" class="fa-solid fa-ban text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Inhabilitar"></i>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -106,7 +116,10 @@
   <div id="modal-nuevo-proyecto" class="modal-custom d-none">
     <div class="modal-overlay"></div>
     <div class="modal-content">
-      <h5 class="mb-0">Nuevo Proyecto</h5>
+      <div class="d-flex justify-content-between">
+        <h5 class="mb-0">Nuevo Proyectos</h5>
+        <span><i title="Cerrar" class="fa-solid fa-xmark" style="font-size: 20px;" id="cerrar-icon"></i></span>
+      </div>
       <hr>
       <form id="form-nuevo-proyecto">
         <div class="row">
@@ -123,6 +136,12 @@
             <input type="date" class="form-control" id="fechaHasta-nuevo">
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
+            <label for="estados" class="form-label">Tecnologías</label>
+            <select name="estados" id="estado-nuevo" class="form-select">
+              <!-- Carga dinámica -->
+            </select>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mt-3">
             <label for="estados" class="form-label">Estado</label>
             <select name="estados" id="estado-nuevo" class="form-select">
               <option value="Activo">Activo</option>
