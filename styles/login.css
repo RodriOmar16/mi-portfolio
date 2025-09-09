@@ -26,6 +26,7 @@
 }
 /*loading*/
 #modal-espera .modal-content{
+  width: 500px;
   flex-direction: row ;
 }
 

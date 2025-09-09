@@ -167,29 +167,33 @@ const renderizarResultados = (lista) => {
 
     const span = document.createElement("span");
 
-    const iconoEditar = document.createElement("i");
-    iconoEditar.id = `editar-${e.tecnologia_id}`;
-    iconoEditar.setAttribute("type", "button");
-    iconoEditar.setAttribute("title", "Editar");
-    iconoEditar.className = "fa-solid fa-pencil me-1 text-warning";
-    iconoEditar.setAttribute("data-bs-toggle","tooltip");
-    iconoEditar.setAttribute("data-bs-placement","bottom");
-    iconoEditar.setAttribute("data-bs-title","Editar");
-    iconoEditar.addEventListener("click", () => {
-      ejecutarEdicion(e.tecnologia_id);
-    });
-    span.appendChild(iconoEditar);
+    if(e.inhabilitada == 0){
+      const iconoEditar = document.createElement("i");
+      iconoEditar.id = `editar-${e.tecnologia_id}`;
+      iconoEditar.setAttribute("type", "button");
+      iconoEditar.setAttribute("title", "Editar");
+      iconoEditar.className = "fa-solid fa-pencil me-1 text-warning";
+      iconoEditar.setAttribute("data-bs-toggle","tooltip");
+      iconoEditar.setAttribute("data-bs-placement","bottom");
+      iconoEditar.setAttribute("data-bs-title","Editar");
+      iconoEditar.addEventListener("click", () => {
+        ejecutarEdicion(e.tecnologia_id);
+      });
+      span.appendChild(iconoEditar);
+    }
 
     const iconoBloc   = document.createElement("i");
     iconoBloc.id = `blocked-${e.tecnologia_id}`;
     iconoBloc.setAttribute("type", "button");
-    iconoBloc.setAttribute("title", "Inhabilitar");
-    iconoBloc.className = "fa-solid fa-ban text-danger";
+    iconoBloc.setAttribute("title", e.inhabilitada == 0 ? "Inhabilitar" : "Habilitar");
+    iconoBloc.className =  e.inhabilitada == 0 ? "fa-solid fa-ban text-danger" : "fa-solid fa-check text-success";
     iconoBloc.setAttribute("data-bs-toggle","tooltip");
     iconoBloc.setAttribute("data-bs-placement","bottom");
-    iconoBloc.setAttribute("data-bs-title","Inhabilitar");
+    iconoBloc.setAttribute("data-bs-title",e.inhabilitada == 0 ? "Inhabilitar" : "Habilitar");
     iconoBloc.addEventListener("click", () => {
-      ejecutarBloqueo(e.tecnologia_id);
+      if(e.inhabilitada == 0){
+        ejecutarBloqueo(e.tecnologia_id);
+      }else ejecutarDesbloqueo(e.tecnologia_id);
     });
     span.appendChild(iconoBloc);
 
@@ -206,13 +210,53 @@ const ejecutarEdicion = (id) => {
   console.log("tecno para editar: ", tecno)
 };
 
-const ejecutarBloqueo = (id) => {
-  //console.log("id: ", id);
+
+const bloquear = async (datos) => {
+  
+};
+const ejecutarBloqueo = async (id) => {
+  const tecno = tecnologias.find(e => e.tecnologia_id == id);
+  if (!tecno) return;
+
+  const result = await Swal.fire({
+    title: 'Confirmar acción',
+    html: `¿Estás seguro de inhabilitar <strong>${tecno.nombre}</strong>?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: "#0D6EFD",
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (!result.isConfirmed) return;
+
+  let datos = { id, accion: 'bloquear' };
+
+  mostrarCarga(true);
+  const res = await consultaPOST(datos);
+  mostrarCarga(false);
+
+  if (res.resultado === 0) {
+    console.log("entró por el error: ",res.msj);
+    return;
+  }
+
+  await Swal.fire({
+    title: 'Bloqueo exitoso',
+    html: `Se inhabilitó correctamente la tecnología <strong>${tecno.nombre}</strong>`,
+    icon: 'success',
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: "#198754"
+  });
+};
+
+
+const ejecutarDesbloqueo = (id) => {
   const tecno = tecnologias.filter(e => e.tecnologia_id == id)[0];
   //console.log("tecno para bloquear: ", tecno)
   Swal.fire({
     title: 'Confirmar acción',
-    html: `¿Estás seguro de inhabilitar <strong>${tecno.nombre}</strong>?`,
+    html: `¿Estás seguro de habilitar <strong>${tecno.nombre}</strong>?`,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Aceptar',
@@ -220,8 +264,7 @@ const ejecutarBloqueo = (id) => {
     cancelButtonText: 'Cancelar'
   }).then((result) => {
     if (result.isConfirmed) {
-      console.log("bloqueo");
+      console.log("desbloqueo");
     }
   });
-
 };

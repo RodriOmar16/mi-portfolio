@@ -41,6 +41,12 @@
           case 'eliminar':
             eliminarTecnologia($data);
             break;
+          case 'bloquear':
+            bloquear($data);
+            break;
+          case 'desbloquear':
+            desbloquear($data);
+            break;
           default:
             sendResponse(0, "Acción no reconocida.");
         }
@@ -89,8 +95,6 @@
 
       $stmt = $conn->prepare($sql);
       if (!$stmt) {
-        /*error_log("Prepare failed: " . $conn->error);
-        sendResponse(0, "Error al preparar la consulta.");*/
         throw new Exception("Error en prepare: " . $conn->error);
       }
 
@@ -108,17 +112,7 @@
       error_log("Ejecutando statement...");
       $stmt->execute();
       error_log("Statement ejecutado correctamente");
-      /*$stmt->store_result();
-      $stmt->bind_result($id, $nombre, $inhabilitada);
 
-      $tecnos = [];
-      while ($stmt->fetch()) {
-        $tecnos[] = [
-          'id' => $id,
-          'nombre' => $nombre,
-          'inhabilitada' => $inhabilitada
-        ];
-      }*/
       $result = $stmt->get_result();
       if (!$result) {
         throw new Exception("Error al obtener resultados: " . $conn->error);
@@ -183,4 +177,60 @@
   function eliminarTecnologia($data) {
     sendResponse(0, "Función eliminarTecnologia aún no implementada.");
   }
+
+  //bloquear:
+  function bloquear($data){
+    global $conn;
+
+    //Controlo que exista antes de cambiar el estado
+    if (!isset($data['id'])) {
+      sendResponse(0, "No llego el ID.");
+    }
+    $id  = $data['id'];
+
+    try {
+      $sql = "SELECT count(*) FROM tecnologias WHERE tecnologia_id = ? AND inhabilitada = 0";
+
+      $stmt = $conn->prepare($sql);
+      if (!$stmt) {
+        throw new Exception("Error en prepare: " . $conn->error);
+      }
+
+      $stmt->bind_param("i", $id);
+      $stmt->execute();
+      
+      $result = $stmt->get_result();
+      if (!$result) {
+        throw new Exception("Error al obtener resultados: " . $conn->error);
+      }
+      $row = $result->fetch_assoc();
+      $cantidad = intval($row['cantidad']);
+
+      if($cantidad == 0){
+        sendResponse(0, "La tecnología ya está inhabilitada o no existe.");
+      }
+
+      //Se procede a actualizar
+      $sqlUpdate = "UPDATE tecnologias SET inhabilitada = 1 WHERE tecnologia_id = ?";
+      $stmtUpdate = $conn->prepare($sqlUpdate);
+
+      if (!$stmtUpdate) {
+        throw new Exception("Error en prepare: " . $conn->error);
+      }
+
+      $stmt->bind_param("i", $id);
+      $stmt->execute();
+
+      if ($stmtUpdate->affected_rows === 1) {
+        sendResponse(1, "Tecnología inhabilitada correctamente.");
+      } else {
+        sendResponse(0, "No se pudo inhabilitar la tecnología.");
+      }
+    } catch (\Throwable $e) {
+      error_log("Excepción en bloquearDesbloquear: " . $e->getMessage());
+      handleException($e);
+    }
+  }
+
+    
 ?>
