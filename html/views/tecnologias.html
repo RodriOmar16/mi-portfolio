@@ -1,3 +1,102 @@
-<section>
-  <div class="bg-primary">Hola mundo desde tecnologias</div>
+<section class="vista-tecnologias">
+  <div class="card contenedor-seccion-filtros">
+    <div class="card-body">
+      <div class="card-title d-flex justify-content-between ">
+        <h4><i class="fa-solid fa-filter icono-filtros"></i> Filtros</h4>
+        <button 
+          id="button-nuevo" 
+          class="btn p-0 border-0 bg-transparent" 
+          title="Nueva Tecnología">
+          <i class="fa-solid fa-circle-plus text-success button-nuevo" ></i>
+        </button>
+      </div>
+      <form class="form-buscar" id="form-buscar">
+        <div class="row">
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <label for="id" class="form-label">Id</label>
+            <input name="id" type="number" class="form-control" id="id">
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <label for="nombre" class="form-label">Nombre </label>
+            <input name="nombre" type="text" class="form-control" id="nombre">
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <label for="estados" class="form-label">Estado</label>
+            <select name="estado" id="estados" class="form-select">
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
+            </select>
+          </div>
+          <div class="col-lg-3 contenedor-button-buscar mt-3">
+            <button title="Buscar" class="btn btn-primary" id="buttonBuscar" type="submit"> <i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="contenedor-resultados card">
+    <div class="card-body head-table">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr class="">
+            <th scope="col">ID</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Estado</th>
+            <th scope="col" class="row-acciones-tecno">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-resultados">
+          <!--<tr>
+            <th data-label="ID" scope="row">1</th>
+            <td data-label="Nombre">React</td>
+            <td data-label="Estado">Inactivo</td>
+            <td data-label="Acciones" class="row-acciones-tecno">
+              <span>
+                <i type="button" class="fa-solid fa-pencil me-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"></i>
+                <i type="button" class="fa-solid fa-ban text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Inhabilitar"></i>
+              </span>
+            </td>
+          </tr>-->
+          <tr>
+            <td colspan="4">
+              <div class="w-60 mt-3 alert d-flex align-items-center justify-content-center text-wrap fs-5" id="sin-resultados">
+                <i class="fa-solid fa-triangle-exclamation"> No hay resultados para mostrar</i>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div> 
+
+  <!-- componentes dialog -->
+  <div id="modal-nueva-tecnologia" class="modal-custom d-none">
+    <div class="modal-overlay"></div>
+    <div class="modal-content-tecnologias">
+      <div class="d-flex justify-content-between">
+        <h5 class="mb-0">Nueva Tecnología</h5>
+        <span><i title="Cerrar" class="fa-solid fa-xmark" style="font-size: 20px;" id="cerrar-icon"></i></span>
+      </div>
+      <hr>
+      <form id="form-nuevo">
+        <div class="row">
+          <div class="col-lg-6 col-md-4 col-sm-6">
+            <label for="nombre-nuevo" class="form-label">Nombre </label>
+            <input type="text" class="form-control" name="nombre_nuevo" id="nombre-nuevo">
+          </div>
+          <div class="col-lg-6 col-md-4 col-sm-6">
+            <label for="estado-nuevo" class="form-label">Estado</label>
+            <select name="estado_nuevo" id="estado-nuevo" class="form-select">
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions mt-3">
+          <button type="button" class="btn btn-secondary" id="cancelarModal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </section>

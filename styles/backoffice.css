@@ -88,6 +88,14 @@
 }
 
 /*vista - proyectos*/
+
+/* vista - tecnologias*/
+.row-acciones-tecno{
+  display: flex;
+  justify-content: center;
+}
+
+/*generales*/
 .contenedor-seccion-filtros{
   min-height: 170px;
   padding: 0px 15px;
@@ -122,8 +130,7 @@
   align-items: center;
   justify-content: center;
 }
-
-.modal-content {
+.modal-content-proyectos {
   position: relative;
   z-index: 2;
   background-color: #fff !important; /* ← fuerza el color blanco */
@@ -132,6 +139,16 @@
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
   width: 100%;
   max-width: 800px;
+}
+.modal-content-tecnologias {
+  position: relative;
+  z-index: 2;
+  background-color: #fff !important; /* ← fuerza el color blanco */
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 500px;
 }
 .modal-overlay {
   position: absolute;
@@ -142,18 +159,6 @@
   background-color: rgba(0, 0, 0, 0.5); /* fondo gris */
   z-index: 1;
 }
-
-/*.modal-content {
-  position: relative;
-  z-index: 2;
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
-  width: 100%;
-  max-width: 500px;
-}*/
-
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -167,3 +172,24 @@
     flex-direction: column;
   }
 }
+@media (max-width: 768px) {
+  table thead {
+    display: none;
+  }
+  table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    padding: 1rem;
+  }
+  table tbody td, .row-acciones-tecno  {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+  }
+  table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+  }
+}
+

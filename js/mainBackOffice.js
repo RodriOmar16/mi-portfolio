@@ -1,6 +1,3 @@
-
-
-
 const cargarInfoUser = () => {
   const name = localStorage.getItem("usuario");
   const encabezado = document.getElementById("user-name");

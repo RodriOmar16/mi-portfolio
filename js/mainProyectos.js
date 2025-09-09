@@ -1,48 +1,32 @@
-import { apiFetch } from "./api.js";
+//import { apiFetch } from "./api.js";
+import { consulta } from "./mainTecnologias.js";
 
-const tecnologias = [];
-
-const getTecnologias = () => {
-  return new Promise (async (resolve, reject) => {
-    try {
-      const res = await apiFetch("api_proyectos.php",{
-        method: 'GET', 
-        body: null
-      });
-      const data = await res.json();
-      resolve({
-        resultado: 1,
-        msj: 'OK',
-        tecnologias: data.tecnologias
-      });
-
-    } catch (error) {
-      resolve({
-        resultado: 0,
-        msj: "Ocurrió un error al intentar obtener las técnologias: "+error.message,
-      });
-    }
-  });
-};
-
+//obtener datos principales
+let tecnologias = [];
 const obtenerTecnos = async ()=>{
   mostrarCarga(true);
-  const res = await getTecnologias();
+  const res = await consulta({estado: "true"});
   mostrarCarga(false);
   if(res.resultado == 0){
     return console.log("se rompió algo no trajo las tecno");
   }
   tecnologias = res.tecnologias;
+  //construir las options dinamico
 };
-//obtenerTecnos();
+obtenerTecnos();
+
+// acciones del boton buscar: form-buscar
 
 /*mostrarCarga(true);
 setTimeout(() => {
   mostrarCarga(false);
 }, 500);*/
 
+//Modal nuevo proyecto y acciones
+const modalNuevoProyecto = document.getElementById("modal-nuevo-proyecto");
+
 const resetearValores = () => {
-  document.getElementById("modal-nuevo-proyecto").classList.add("d-none");
+  modalNuevoProyecto.classList.add("d-none");
   const nombreNuevo = document.getElementById("nombre-nuevo");
   const descriNuevo = document.getElementById("descripcion-nuevo");
 
@@ -54,7 +38,6 @@ const buttonNuevo  = document.getElementById("button-nuevo");
 if(buttonNuevo){
   buttonNuevo.addEventListener("click", () => {
     
-    const modalNuevoProyecto = document.getElementById("modal-nuevo-proyecto");
     if(modalNuevoProyecto){
       modalNuevoProyecto.classList.remove("d-none");
     }
@@ -81,16 +64,3 @@ if(buttonCerrar){
     resetearValores();
   });
 }
-//Swal.fire('¡Guardado!', 'El proyecto fue creado con éxito.', 'success');
-Swal.fire({
-  title: '¿Estás seguro?',
-  text: 'Esta acción no se puede deshacer.',
-  icon: 'question',
-  showCancelButton: true,
-  confirmButtonText: 'Sí, eliminar',
-  cancelButtonText: 'Cancelar'
-}).then((result) => {
-  if (result.isConfirmed) {
-    // ejecutar delete
-  }
-});

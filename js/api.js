@@ -4,13 +4,18 @@ export const apiFetch = async (endpoint, options={}) => {
   try {
     const token = localStorage.getItem('token');
     const headers = {
-      'Content-Type': 'application/json',
-      ...(token && {Authorization: `Bearer ${token}` })
+      'Content-Type': 'application/json'/*,
+      ...(token && {Authorization: `Bearer ${token}` })*/
     }
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       headers,
       ...options, // Extiende con las opciones proporcionadas (método, body, etc.)
     });
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      throw new Error("Respuesta no es JSON");
+    }
 
     return await response.json();
 

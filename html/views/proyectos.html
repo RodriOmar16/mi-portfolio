@@ -10,7 +10,7 @@
           <i class="fa-solid fa-circle-plus text-success button-nuevo" ></i>
         </button>
       </div>
-      <form class="form-buscar-proyectos">
+      <form class="form-buscar">
         <div class="row">
           <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="id" class="form-label">Id</label>
@@ -55,8 +55,6 @@
           <tr class="">
             <th scope="col">ID</th>
             <th scope="col">Nombre</th>
-            <th scope="col">Descripción</th>
-            <th scope="col">Duración (meses)</th>
             <th scope="col">Fecha Inicio</th>
             <th scope="col">Fecha Hasta</th>
             <th scope="col">Tecnología</th>
@@ -66,45 +64,45 @@
         </thead>
         <tbody>
           <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-            <td>@mdo</td>
-            <td>sdfsdf</td>
-            <td>@mdo</td>
-            <td>@mdo</td>
-            <td>
-              <i type="button" class="fa-solid fa-pencil me-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"></i>
-              <i type="button" class="fa-solid fa-ban text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Inhabilitar"></i>
+            <th data-label="ID" scope="row">1</th>
+            <td data-label="Nombre">Mark</td>
+            <td data-label="Fecha Inicio">@mdo</td>
+            <td data-label="Fecha Hasta">sdfsdf</td>
+            <td data-label="Tecnologia">@mdo</td>
+            <td data-label="Estados">@mdo</td>
+            <td data-label="Acciones">
+              <span>
+                <i type="button" class="fa-solid fa-pencil me-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"></i>
+                <i type="button" class="fa-solid fa-ban text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Inhabilitar"></i>
+              </span>
             </td>
           </tr>
           <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-            <td>@fat</td>
-            <td>@fat</td>
-            <td>sdfsdf</td>
-            <td>@fat</td>
-            <td>
-              <i type="button" class="fa-solid fa-pencil me-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"></i>
-              <i type="button" class="fa-solid fa-ban text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Inhabilitar"></i>
+            <th data-label="ID" scope="row">2</th>
+            <td data-label="Nombre">Jacob</td>
+            <td data-label="Fecha Inicio">@fat</td>
+            <td data-label="Fecha Hasta">sdfsdf</td>
+            <td data-label="Tecnologia">@mdo</td>
+            <td data-label="Estados">@mdo</td>
+            <td data-label="Acciones">
+              <span>
+                <i type="button" class="fa-solid fa-pencil me-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"></i>
+                <i type="button" class="fa-solid fa-ban text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Inhabilitar"></i>
+              </span>
             </td>
           </tr>
           <tr>
-            <th scope="row">3</th>
-            <td>John</td>
-            <td>Doe</td>
-            <td>@social</td>
-            <td>@social</td>
-            <td>@social</td>
-            <td>@social</td>
-            <td>sdfsdf</td>
-            <td>
-              <i type="button" class="fa-solid fa-pencil me-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"></i>
-              <i type="button" class="fa-solid fa-ban text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Inhabilitar"></i>
+            <th data-label="ID" scope="row">3</th>
+            <td data-label="Nombre">John</td>
+            <td data-label="Fecha Inicio">@social</td>
+            <td data-label="Fecha Hasta">sdfsdf</td>
+            <td data-label="Tecnologia">@mdo</td>
+            <td data-label="Estados">@mdo</td>
+            <td data-label="Acciones">
+              <span>
+                <i type="button" class="fa-solid fa-pencil me-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"></i>
+                <i type="button" class="fa-solid fa-ban text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Inhabilitar"></i>
+              </span>
             </td>
           </tr>
         </tbody>
@@ -115,7 +113,7 @@
   <!-- componentes dialog -->
   <div id="modal-nuevo-proyecto" class="modal-custom d-none">
     <div class="modal-overlay"></div>
-    <div class="modal-content">
+    <div class="modal-content-proyectos">
       <div class="d-flex justify-content-between">
         <h5 class="mb-0">Nuevo Proyectos</h5>
         <span><i title="Cerrar" class="fa-solid fa-xmark" style="font-size: 20px;" id="cerrar-icon"></i></span>
@@ -125,27 +123,27 @@
         <div class="row">
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="nombre" class="form-label">Nombre </label>
-            <input type="text" class="form-control" id="nombre-nuevo">
+            <input type="text" class="form-control" name="nombre-nuevo" id="nombre-nuevo">
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="fechaDesde" class="form-label">Fecha desde</label>
-            <input type="date" class="form-control" id="fechaDesde-nuevo">
+            <input type="date" class="form-control" name="fechaDesde-nuevo" id="fechaDesde-nuevo">
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="fechaHasta" class="form-label">Fecha hasta</label>
-            <input type="date" class="form-control" id="fechaHasta-nuevo">
+            <input type="date" class="form-control" name="fechaHasta-nuevo" id="fechaHasta-nuevo">
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="estados" class="form-label">Tecnologías</label>
-            <select name="estados" id="estado-nuevo" class="form-select">
+            <select name="estados" id="tecno-nuevo" class="form-select">
               <!-- Carga dinámica -->
             </select>
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6 mt-3">
             <label for="estados" class="form-label">Estado</label>
             <select name="estados" id="estado-nuevo" class="form-select">
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
             </select>
           </div>
           <div class="col-12">

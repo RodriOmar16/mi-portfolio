@@ -1,1 +1,2 @@
-{"user":"rodrigo.omar.miranda16@gmail.com","password":"Rodrigo1698*"}
+Método: GET
+Datos: {"id":"5","inhabilitada":"0"}

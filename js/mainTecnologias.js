@@ -1,6 +1,227 @@
-console.log("hola mundo desde tecnologias")
-mostrarCarga(true);
+import { apiFetch } from "./api.js";
 
-setTimeout(() => {
+//modal nueva y acciones
+const modalNuevaTecno = document.getElementById("modal-nueva-tecnologia");
+const formModal       = document.getElementById("form-nuevo");
+const formBuscar      = document.getElementById("form-buscar");
+const buttonNuevo     = document.getElementById("button-nuevo");
+const buttonCerrar    = document.getElementById("cerrar-icon");
+const cancelButton    = document.getElementById("cancelarModal"); 
+let tecnologias     = [];
+
+const resetearValores = () => {
+  modalNuevaTecno.classList.add("d-none");
+  formModal.reset(); 
+};
+
+if (buttonNuevo) {
+  buttonNuevo.addEventListener("click", () => {
+    modalNuevaTecno.classList.remove("d-none");
+  });
+}
+
+if (buttonCerrar) {
+  buttonCerrar.addEventListener("click", () => {
+    resetearValores();
+  });
+}
+
+if (cancelButton) {
+  cancelButton.addEventListener("click", () => {
+    resetearValores();
+  });
+}
+
+if (formModal) {
+  formModal.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const datos = Object.fromEntries(new FormData(e.target));
+    await crearNuevaTecno(datos);
+  });
+}
+
+if (formBuscar) {
+  formBuscar.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const datos = Object.fromEntries(new FormData(e.target));
+    await getTecnologias(datos);
+  });
+}
+
+//CREAR NUEVO 
+const consultaPOST = async (payload) => {
+  try {
+    const data = await apiFetch("api_tecnologias.php", {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    return data;
+  } catch (error) {
+    return {
+      resultado: 0,
+      msj: error.message
+    };
+  }
+}
+const crearNuevaTecno = async (datos) => {
+  datos.accion = 'crear';
+  mostrarCarga(true);
+  const res = await consultaPOST(datos);
   mostrarCarga(false);
-}, 1000);
+
+  if(res.resultado == 0){
+    return Swal.fire({
+      title: 'Error al crear nueva Tecnología',
+      text: 'Ocurrió un error inesperado al crear la tecnología: '+res.msj,
+      icon: 'error'
+    });
+  }
+  Swal.fire({
+    title: 'Nueva Tecnología',
+    text: 'Se creó correctamente la tecnología.',
+    icon: 'success'
+  });
+  resetearValores();
+};
+
+//OBTENER TECNOS
+export const consulta = async (payload) => {
+  try {
+    const params = new URLSearchParams();
+
+    if (payload.id) params.append("id", payload.id);
+    if (payload.nombre) params.append("nombre", payload.nombre);
+    if (payload.estado) params.append("inhabilitada", payload.estado === "true" ? "0" : "1");
+
+    const data = await apiFetch(`api_tecnologias.php?${params.toString()}`, {
+      method: 'GET'
+    });
+
+    return data;
+  } catch (error) {
+    return {
+      resultado: 0,
+      msj: error.message
+    };
+  }
+}
+const getTecnologias = async (filtros) => {
+  if (filtros.id) filtros.id = parseInt(filtros.id);
+  
+  mostrarCarga(true);
+  const res = await consulta(filtros);
+  mostrarCarga(false);
+  tecnologias = res.tecnologias;
+  renderizarResultados(tecnologias);
+};
+
+const renderizarResultados = (lista) => {
+
+  const tbody = document.getElementById("tbody-resultados");
+  tbody.innerHTML = "";
+
+  if(lista.length == 0){
+    const trSinDatos  = document.createElement("tr");
+    const tdSinDatos  = document.createElement("td");
+    tdSinDatos.setAttribute("colspan", "4");
+    
+    const divSinDatos = document.createElement("div");
+    divSinDatos.className = "w-60 mt-3 alert d-flex align-items-center justify-content-center text-wrap fs-5";
+    divSinDatos.id = "sin-resultados";
+    
+    const icono = document.createElement("i");
+    icono.className = "fa-solid fa-triangle-exclamation";
+    divSinDatos.appendChild(icono);
+
+    const texto = document.createTextNode(" No hay resultados para mostrar");
+    divSinDatos.appendChild(texto);
+
+    tdSinDatos.appendChild(divSinDatos);
+    trSinDatos.appendChild(tdSinDatos);
+    tbody.appendChild(trSinDatos);
+    return;
+  }
+  lista.forEach(e => {
+    const fila     = document.createElement("tr");
+    
+    const id       = document.createElement("th");
+    id.setAttribute("scope", "row");
+    id.setAttribute("data-label", "ID");
+    id.textContent = e.tecnologia_id;
+    fila.appendChild(id);
+
+    const nombre   = document.createElement("td");
+    nombre.setAttribute("data-label", "Nombre");
+    nombre.textContent = e.nombre;
+    fila.appendChild(nombre);
+
+    const estado   = document.createElement("td");
+    estado.setAttribute("data-label", "Estado");
+    estado.textContent = e.ihabilitada == 0 ? 'Activo' : 'Inactiva';
+    fila.appendChild(estado);
+
+    const acciones = document.createElement("td");
+    acciones.setAttribute("data-label", "Acciones");
+    acciones.classList.add("row-acciones-tecno");
+
+    const span = document.createElement("span");
+
+    const iconoEditar = document.createElement("i");
+    iconoEditar.id = `editar-${e.tecnologia_id}`;
+    iconoEditar.setAttribute("type", "button");
+    iconoEditar.setAttribute("title", "Editar");
+    iconoEditar.className = "fa-solid fa-pencil me-1 text-warning";
+    iconoEditar.setAttribute("data-bs-toggle","tooltip");
+    iconoEditar.setAttribute("data-bs-placement","bottom");
+    iconoEditar.setAttribute("data-bs-title","Editar");
+    iconoEditar.addEventListener("click", () => {
+      ejecutarEdicion(e.tecnologia_id);
+    });
+    span.appendChild(iconoEditar);
+
+    const iconoBloc   = document.createElement("i");
+    iconoBloc.id = `blocked-${e.tecnologia_id}`;
+    iconoBloc.setAttribute("type", "button");
+    iconoBloc.setAttribute("title", "Inhabilitar");
+    iconoBloc.className = "fa-solid fa-ban text-danger";
+    iconoBloc.setAttribute("data-bs-toggle","tooltip");
+    iconoBloc.setAttribute("data-bs-placement","bottom");
+    iconoBloc.setAttribute("data-bs-title","Inhabilitar");
+    iconoBloc.addEventListener("click", () => {
+      ejecutarBloqueo(e.tecnologia_id);
+    });
+    span.appendChild(iconoBloc);
+
+    acciones.appendChild(span);
+    fila.appendChild(acciones);
+
+    tbody.appendChild(fila);
+  }); 
+};
+
+const ejecutarEdicion = (id) => {
+  console.log("id: ", id);
+  const tecno = tecnologias.filter(e => e.tecnologia_id == id);
+  console.log("tecno para editar: ", tecno)
+};
+
+const ejecutarBloqueo = (id) => {
+  //console.log("id: ", id);
+  const tecno = tecnologias.filter(e => e.tecnologia_id == id)[0];
+  //console.log("tecno para bloquear: ", tecno)
+  Swal.fire({
+    title: 'Confirmar acción',
+    html: `¿Estás seguro de inhabilitar <strong>${tecno.nombre}</strong>?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor:"#0D6EFD",
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      console.log("bloqueo");
+    }
+  });
+
+};

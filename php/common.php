@@ -7,9 +7,15 @@
 
   // Manejo global de excepciones
   function handleException($exception) {
-    error_log($exception->getMessage());
-    sendResponse(0, 'Error interno del servidor');
+    error_log("Excepción no capturada: " . $exception->getMessage());
+    header('Content-Type: application/json');
+    echo json_encode([
+      'resultado' => 0,
+      'msj' => 'Error interno del servidor'
+    ]);
+    exit;
   }
+
 
   // Registrar manejador de excepciones
   set_exception_handler('handleException');
