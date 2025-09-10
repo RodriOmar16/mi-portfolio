@@ -1,17 +1,27 @@
 import { apiFetch } from "./api.js";
 
 //modal nueva y acciones
-const modalNuevaTecno = document.getElementById("modal-nueva-tecnologia");
-const formModal       = document.getElementById("form-nuevo");
-const formBuscar      = document.getElementById("form-buscar");
-const buttonNuevo     = document.getElementById("button-nuevo");
-const buttonCerrar    = document.getElementById("cerrar-icon");
-const cancelButton    = document.getElementById("cancelarModal"); 
-let tecnologias     = [];
+const modalNuevaTecno    = document.getElementById("modal-nueva-tecnologia");
+const modalEditarTecno   = document.getElementById("modal-editar-tecnologia");
+const formModal          = document.getElementById("form-nuevo");
+const formEditar         = document.getElementById("form-editar");
+const formBuscar         = document.getElementById("form-buscar");
+const buttonNuevo        = document.getElementById("button-nuevo");
+const buttonCerrarNuevo  = document.getElementById("cerrar-icon");
+const buttonCancelNuevo  = document.getElementById("cancelarModal"); 
+const buttonCerrarEditar = document.getElementById("cerrar-editar");
+const buttonCancelEditar = document.getElementById("cancelarEditar"); 
+const buttonLimpiar      = document.getElementById("limpiar");
+const inputBusqueda      = document.getElementById("busqueda");
+let tecnologias          = [];
 
 const resetearValores = () => {
   modalNuevaTecno.classList.add("d-none");
   formModal.reset(); 
+};
+const resetearValoresEditar = () => {
+  modalEditarTecno.classList.add("d-none");
+  formEditar.reset(); 
 };
 
 if (buttonNuevo) {
@@ -20,15 +30,27 @@ if (buttonNuevo) {
   });
 }
 
-if (buttonCerrar) {
-  buttonCerrar.addEventListener("click", () => {
+if (buttonCerrarNuevo) {
+  buttonCerrarNuevo.addEventListener("click", () => {
     resetearValores();
   });
 }
 
-if (cancelButton) {
-  cancelButton.addEventListener("click", () => {
+if (buttonCancelNuevo) {
+  buttonCancelNuevo.addEventListener("click", () => {
     resetearValores();
+  });
+}
+
+if (buttonCerrarEditar) {
+  buttonCerrarEditar.addEventListener("click", () => {
+    resetearValoresEditar();
+  });
+}
+
+if (buttonCancelEditar) {
+  buttonCancelEditar.addEventListener("click", () => {
+    resetearValoresEditar();
   });
 }
 
@@ -48,73 +70,21 @@ if (formBuscar) {
   });
 }
 
-//CREAR NUEVO 
-const consultaPOST = async (payload) => {
-  try {
-    const data = await apiFetch("api_tecnologias.php", {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-
-    return data;
-  } catch (error) {
-    return {
-      resultado: 0,
-      msj: error.message
-    };
-  }
-}
-const crearNuevaTecno = async (datos) => {
-  datos.accion = 'crear';
-  mostrarCarga(true);
-  const res = await consultaPOST(datos);
-  mostrarCarga(false);
-
-  if(res.resultado == 0){
-    return Swal.fire({
-      title: 'Error al crear nueva Tecnología',
-      text: 'Ocurrió un error inesperado al crear la tecnología: '+res.msj,
-      icon: 'error'
-    });
-  }
-  Swal.fire({
-    title: 'Nueva Tecnología',
-    text: 'Se creó correctamente la tecnología.',
-    icon: 'success'
+if(buttonLimpiar){
+  buttonLimpiar.addEventListener("click", () =>{
+    formBuscar.reset();
   });
-  resetearValores();
-};
-
-//OBTENER TECNOS
-export const consulta = async (payload) => {
-  try {
-    const params = new URLSearchParams();
-
-    if (payload.id) params.append("id", payload.id);
-    if (payload.nombre) params.append("nombre", payload.nombre);
-    if (payload.estado) params.append("inhabilitada", payload.estado === "true" ? "0" : "1");
-
-    const data = await apiFetch(`api_tecnologias.php?${params.toString()}`, {
-      method: 'GET'
-    });
-
-    return data;
-  } catch (error) {
-    return {
-      resultado: 0,
-      msj: error.message
-    };
-  }
 }
-const getTecnologias = async (filtros) => {
-  if (filtros.id) filtros.id = parseInt(filtros.id);
-  
-  mostrarCarga(true);
-  const res = await consulta(filtros);
-  mostrarCarga(false);
-  tecnologias = res.tecnologias;
-  renderizarResultados(tecnologias);
-};
+
+if(inputBusqueda){
+  inputBusqueda.addEventListener('input', (e) => {
+    const texto = e.target.value.toLowerCase();
+    const filtrados = tecnologias.filter(e => e.nombre.toLowerCase().includes(texto) || 
+      String(e.tecnologia_id).includes(texto)
+    );
+    renderizarResultados(filtrados);
+  });
+}
 
 const renderizarResultados = (lista) => {
 
@@ -204,10 +174,88 @@ const renderizarResultados = (lista) => {
   }); 
 };
 
+//CREAR NUEVO 
+const consultaPOST = async (payload) => {
+  try {
+    const data = await apiFetch("api_tecnologias.php", {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    return data;
+  } catch (error) {
+    return {
+      resultado: 0,
+      msj: error.message
+    };
+  }
+}
+const crearNuevaTecno = async (datos) => {
+  datos.accion = 'crear';
+  mostrarCarga(true);
+  const res = await consultaPOST(datos);
+  mostrarCarga(false);
+
+  if(res.resultado == 0){
+    return Swal.fire({
+      title: 'Error al crear nueva Tecnología',
+      text: 'Ocurrió un error inesperado al crear la tecnología: '+res.msj,
+      icon: 'error'
+    });
+  }
+  Swal.fire({
+    title: 'Nueva Tecnología',
+    text: 'Se creó correctamente la tecnología.',
+    icon: 'success'
+  });
+  resetearValores();
+};
+
+//OBTENER TECNOS
+export const consulta = async (payload) => {
+  try {
+    const params = new URLSearchParams();
+
+    if (payload.id) params.append("id", payload.id);
+    if (payload.nombre) params.append("nombre", payload.nombre);
+    if (payload.estado) params.append("inhabilitada", payload.estado === "true" ? "0" : "1");
+
+    const data = await apiFetch(`api_tecnologias.php?${params.toString()}`, {
+      method: 'GET'
+    });
+
+    return data;
+  } catch (error) {
+    return {
+      resultado: 0,
+      msj: error.message
+    };
+  }
+}
+const getTecnologias = async (filtros) => {
+  if (filtros.id) filtros.id = parseInt(filtros.id);
+  
+  mostrarCarga(true);
+  const res = await consulta(filtros);
+  mostrarCarga(false);
+  tecnologias = res.tecnologias;
+  renderizarResultados(tecnologias);
+};
+
 const ejecutarEdicion = (id) => {
-  console.log("id: ", id);
-  const tecno = tecnologias.filter(e => e.tecnologia_id == id);
-  console.log("tecno para editar: ", tecno)
+  modalEditarTecno.classList.remove("d-none");
+  const tecno = tecnologias.find(e => e.tecnologia_id == id);
+  console.log("tecno: ", tecno)
+  for(const [clave, valor] of Object.entries(tecno)){
+    const campo = formEditar.elements[clave];
+    if(campo) {
+      if(clave == "inhabilitada"){
+        campo.value = valor == 0 ? true : false;
+      }else campo.value = valor;
+      
+    };
+  }
+  console.log("editando...")
 };
 
 const ejecutarBloqueo = async (id) => {

@@ -165,11 +165,17 @@
   gap: 1rem;
   margin-top: 1rem;
 }
+.tam-busqueda{
+  width: 25% !important;
+}
 
 
 @media(max-width:450px){
   .barra-nav {
     flex-direction: column;
+  }
+  .tam-busqueda{
+    width: 100% !important;
   }
 }
 @media (max-width: 768px) {
