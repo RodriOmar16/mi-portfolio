@@ -210,10 +210,6 @@ const ejecutarEdicion = (id) => {
   console.log("tecno para editar: ", tecno)
 };
 
-
-const bloquear = async (datos) => {
-  
-};
 const ejecutarBloqueo = async (id) => {
   const tecno = tecnologias.find(e => e.tecnologia_id == id);
   if (!tecno) return;
@@ -227,7 +223,6 @@ const ejecutarBloqueo = async (id) => {
     confirmButtonColor: "#0D6EFD",
     cancelButtonText: 'Cancelar'
   });
-
   if (!result.isConfirmed) return;
 
   let datos = { id, accion: 'bloquear' };
@@ -237,8 +232,13 @@ const ejecutarBloqueo = async (id) => {
   mostrarCarga(false);
 
   if (res.resultado === 0) {
-    console.log("entró por el error: ",res.msj);
-    return;
+    return await Swal.fire({
+      title: 'Error de bloqueo',
+      text: res.msj,
+      icon: 'error',
+      confirmButtonText: 'Ok',
+      confirmButtonColor: "#0D6EFD"
+    });
   }
 
   await Swal.fire({
@@ -251,20 +251,42 @@ const ejecutarBloqueo = async (id) => {
 };
 
 
-const ejecutarDesbloqueo = (id) => {
-  const tecno = tecnologias.filter(e => e.tecnologia_id == id)[0];
-  //console.log("tecno para bloquear: ", tecno)
-  Swal.fire({
+const ejecutarDesbloqueo = async (id) => {
+  const tecno = tecnologias.find(e => e.tecnologia_id == id);
+  if (!tecno) return;
+
+  const result = await Swal.fire({
     title: 'Confirmar acción',
     html: `¿Estás seguro de habilitar <strong>${tecno.nombre}</strong>?`,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Aceptar',
-    confirmButtonColor:"#0D6EFD",
+    confirmButtonColor: "#0D6EFD",
     cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      console.log("desbloqueo");
-    }
+  });
+  if (!result.isConfirmed) return;
+
+  let datos = { id, accion: 'desbloquear' };
+
+  mostrarCarga(true);
+  const res = await consultaPOST(datos);
+  mostrarCarga(false);
+
+  if (res.resultado === 0) {
+    return await Swal.fire({
+      title: 'Error al desbloquear',
+      text: res.msj,
+      icon: 'error',
+      confirmButtonText: 'Ok',
+      confirmButtonColor: "#0D6EFD"
+    });
+  }
+
+  await Swal.fire({
+    title: 'Desbloqueo exitoso',
+    html: `Se habilitó correctamente la tecnología <strong>${tecno.nombre}</strong>`,
+    icon: 'success',
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: "#198754"
   });
 };

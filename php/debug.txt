@@ -1,2 +1,2 @@
-Método: POST
-Datos: {"id":1,"accion":"bloquear"}
+Método: GET
+Datos: {"inhabilitada":"0"}

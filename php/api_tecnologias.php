@@ -189,7 +189,7 @@
     $id  = $data['id'];
 
     try {
-      $sql = "SELECT count(*) FROM tecnologias WHERE tecnologia_id = ? AND inhabilitada = 0";
+      $sql = "SELECT count(*) as cantidad FROM tecnologias WHERE tecnologia_id = ? AND inhabilitada = 0";
 
       $stmt = $conn->prepare($sql);
       if (!$stmt) {
@@ -218,8 +218,8 @@
         throw new Exception("Error en prepare: " . $conn->error);
       }
 
-      $stmt->bind_param("i", $id);
-      $stmt->execute();
+      $stmtUpdate->bind_param("i", $id);
+      $stmtUpdate->execute();
 
       if ($stmtUpdate->affected_rows === 1) {
         sendResponse(1, "Tecnología inhabilitada correctamente.");
@@ -231,6 +231,60 @@
       handleException($e);
     }
   }
+  //desbloquear
+  function desbloquear($data){
+    global $conn;
 
+    if(!isset($data['id'])){
+      sendResponse(0, "Error, falta parámetro id (importante)");
+    }
+
+    $id = intval($data['id']);
+    try {
+      //controlo que está inhabilitada
+      $sql  = "SELECT count(*) as cantidad FROM tecnologias t WHERE t.tecnologia_id = ? AND inhabilitada = 1";
+      $stmt = $conn->prepare($sql);
+      if(!$stmt){
+        throw new Exception("Error en prepare: " . $conn->error);
+        sendResponse(0,"Error en prepare: " . $conn->error);
+      }
+      $stmt->bind_param("i", $id);
+      $stmt->execute();
+
+      $result = $stmt->get_result();
+      if(!$result){
+         throw new Exception("Error al obtener resultados: " . $conn->error);
+         sendResponse(0, "Error al obtener resultados: " . $conn->error);
+      }
+      $row = $result->fetch_assoc();
+      $cantidad = intval($row['cantidad']);
+
+      if ($cantidad === 0) {
+        sendResponse(0, "La tecnología ya está habilitada o no existe.");
+      }
+
+      //Hago el update
+      $sqlUpdate = "UPDATE tecnologias SET inhabilitada = 0 WHERE tecnologia_id = ?";
+      $stmtUpdate = $conn->prepare($sqlUpdate);
+
+      if(!$stmtUpdate){
+        throw new Exception("Error en prepare (update): " . $conn->error);
+        sendResponse(0, "Error en prepare (update): " . $conn->error);
+      }
+
+      $stmtUpdate->bind_param("i", $id);
+      $stmtUpdate->execute();
+
+      if ($stmtUpdate->affected_rows === 1) {
+        sendResponse(1, "Tecnología habilitada correctamente.");
+      } else {
+        sendResponse(0, "No se pudo habilitar la tecnología.");
+      }
+
+    } catch (\Throwable $e) {
+      error_log("Excepción en bloquearDesbloquear: " . $e->getMessage());
+      handleException($e);
+    }
+  }
     
 ?>
