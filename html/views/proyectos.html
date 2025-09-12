@@ -37,11 +37,12 @@
           <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="estados" class="form-label">Estado</label>
             <select name="estados" id="estados" class="form-select">
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
             </select>
           </div>
           <div class="col-12 contenedor-button-buscar mt-3">
+            <i title="Limpiar filtros" class="fa-solid fa-broom text-warning me-2" id="limpiar" style="font-size: 25px;"></i>
             <button title="Buscar" class="btn btn-primary" id="buttonBuscar"> <i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
           </div>
         </div>
@@ -96,11 +97,11 @@
         <div class="row">
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="nombre-nuevo" class="form-label">Nombre </label>
-            <input type="text" class="form-control" name="nombre" id="nombre-nuevo">
+            <input type="text" class="form-control" required name="nombre" id="nombre-nuevo">
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="fechaDesde" class="form-label">Fecha desde</label>
-            <input type="date" class="form-control" name="fechaDesdeNuevo" id="fechaDesde-nuevo">
+            <input type="date" class="form-control" required name="fechaDesdeNuevo" id="fechaDesde-nuevo">
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="fechaHasta" class="form-label">Fecha hasta</label>
@@ -108,24 +109,28 @@
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="tecnolgias" class="form-label">Tecnologías</label>
-            <select name="tecnologia" id="tecno-nuevo" class="form-select">
+            <select name="tecnologias" id="tecno-nuevo" class="form-select" multiple size="6">
               <!-- Carga dinámica -->
             </select>
           </div>
-          <div class="col-lg-3 col-md-4 col-sm-6 mt-3">
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
             <label for="estado" class="form-label">Estado</label>
-            <select name="estado" id="estado-nuevo" class="form-select">
+            <select name="estado" id="estado-nuevo" required class="form-select">
               <option value="true">Activo</option>
               <option value="false">Inactivo</option>
             </select>
           </div>
+          <div class="col-lg-9 col-md-6 col-sm-6">
+            <label for="url-nuevo" class="form-label">URL Fotos </label>
+            <input type="text" class="form-control" name="url" id="url-nuevo">
+          </div>
           <div class="col-12">
             <label for="descripcion" class="form-label">Descripción </label>
-            <textarea name="descripcion" id="descripcion-nuevo" class="form-control"></textarea>
+            <textarea name="descripcion" id="descripcion-nuevo" required class="form-control" rows="4"></textarea>
           </div>
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" id="cancelarModal">Cancelar</button>
+          <button type="button" class="btn btn-secondary" id="cancelar-nuevo">Cancelar</button>
           <button type="submit" class="btn btn-success">Grabar</button>
         </div>
       </form>
@@ -137,7 +142,7 @@
     <div class="modal-content-proyectos">
       <div class="d-flex justify-content-between">
         <h5 class="mb-0">Nuevo Proyectos</h5>
-        <span><i title="Cerrar" class="fa-solid fa-xmark" style="font-size: 20px;" id="cerrar-icon"></i></span>
+        <span><i title="Cerrar" class="fa-solid fa-xmark" style="font-size: 20px;" id="cerrar-editar"></i></span>
       </div>
       <hr>
       <form id="form-editar">
@@ -177,7 +182,7 @@
           </div>
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" id="cancelarModal">Cancelar</button>
+          <button type="button" class="btn btn-secondary" id="cancelar-editar">Cancelar</button>
           <button type="submit" class="btn btn-success">Guardar cambios</button>
         </div>
       </form>

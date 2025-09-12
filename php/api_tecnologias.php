@@ -142,7 +142,27 @@
 
     try {
       $conn->autocommit(false);
+      //proceso de controlar que no exista ya en la base
+      $sqlControl = "SELECT count(*) as cantidad FROM tecnologias t WHERE nombre = ? AND inhabilitada = ?";
+      $stmtControl = $conn->prepare($sqlControl);
+      if (!$stmtControl) {
+        error_log("Prepare failed: " . $conn->error);
+        sendResponse(0, "No se pudo controlar la duplicidad de la tecnología.");
+      }
+      $stmtControl->bind_param("si",$nombreTecno, $estado);
+      $stmtControl->execute();
+      
+      $result = $stmtControl->get_result();
+      if (!$result) {
+        throw new Exception("Error al obtener resultados: " . $conn->error);
+      }
+      $row = $result->fetch_assoc();
+      $cantidad = intval($row['cantidad']);
 
+      if($cantidad > 0){
+        sendResponse(0, "La tecnología ya está existe.");
+      }     
+      //proceso de crear
       $sql  = "INSERT INTO tecnologias (nombre, inhabilitada) VALUES (?, ?)";
       $stmt = $conn->prepare($sql);
 
@@ -151,12 +171,13 @@
         sendResponse(0, "Error al preparar la consulta.");
       }
 
-      $stmt->bind_param("ss", $nombreTecno, $estado);
+      $stmt->bind_param("si", $nombreTecno, $estado);
       $stmt->execute();
 
       if ($stmt->affected_rows === 1) {
         $conn->commit();
-        sendResponse(1, "Se creó correctamente la Tecnología");
+        $nuevoId = $stmt->insert_id;
+        sendResponse(1, "Se creó correctamente la Tecnología", ["id"=>$nuevoId]);
       } else {
         $conn->rollback();
         sendResponse(0, "No se insertó ningún registro. Revisar.");
@@ -179,6 +200,7 @@
     $nombre = $data['nombre'];
     $estado = $data['inhabilitada'];
     try {
+      $conn->autocommit(false);
       //Controlo que no tenga los cambios que me llegan de la web
       $sql  = "SELECT count(*) as cantidad FROM tecnologias WHERE tecnologia_id = ? AND inhabilitada = ? AND nombre = ?";
       $stmt = $conn->prepare($sql); 
@@ -209,12 +231,15 @@
       $stmtUpdate->execute();
 
       if ($stmtUpdate->affected_rows === 1) {
+        $conn->commit();
         sendResponse(1, "Se actualizó correctamente.");
       } else {
+        $conn->rollback();
         sendResponse(0, "No se pudo modificar la tecnología.");
       }
 
     } catch (\Throwable $e) {
+      $conn->rollback();
       error_log("Excepción en editar: " . $e->getMessage());
       handleException($e);
     }
@@ -236,6 +261,7 @@
     $id  = $data['id'];
 
     try {
+      $conn->autocommit(false);
       $sql = "SELECT count(*) as cantidad FROM tecnologias WHERE tecnologia_id = ? AND inhabilitada = 0";
 
       $stmt = $conn->prepare($sql);
@@ -269,11 +295,14 @@
       $stmtUpdate->execute();
 
       if ($stmtUpdate->affected_rows === 1) {
+        $conn->commit();
         sendResponse(1, "Tecnología inhabilitada correctamente.");
       } else {
+        $conn->rollback();
         sendResponse(0, "No se pudo inhabilitar la tecnología.");
       }
     } catch (\Throwable $e) {
+      $conn->rollback();
       error_log("Excepción en bloquear: " . $e->getMessage());
       handleException($e);
     }
@@ -289,6 +318,7 @@
 
     $id = intval($data['id']);
     try {
+      $conn->autocommit(false);
       //controlo que está inhabilitada
       $sql  = "SELECT count(*) as cantidad FROM tecnologias t WHERE t.tecnologia_id = ? AND inhabilitada = 1";
       $stmt = $conn->prepare($sql);
@@ -324,12 +354,15 @@
       $stmtUpdate->execute();
 
       if ($stmtUpdate->affected_rows === 1) {
+        $conn->commit();
         sendResponse(1, "Tecnología habilitada correctamente.");
       } else {
+        $conn->rollback();
         sendResponse(0, "No se pudo habilitar la tecnología.");
       }
 
     } catch (\Throwable $e) {
+      $conn->rollback();
       error_log("Excepción en desbloquear: " . $e->getMessage());
       handleException($e);
     }

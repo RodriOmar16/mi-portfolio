@@ -1,4 +1,5 @@
 import { apiFetch } from "./api.js";
+import { consulta, consultaPOST } from "./services/apiTecnologias.js";
 
 //modal nueva y acciones
 const modalNuevaTecno    = document.getElementById("modal-nueva-tecnologia");
@@ -186,22 +187,18 @@ const renderizarResultados = (lista) => {
 };
 
 //CREAR NUEVO 
-const consultaPOST = async (payload) => {
-  try {
-    const data = await apiFetch("api_tecnologias.php", {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-
-    return data;
-  } catch (error) {
-    return {
-      resultado: 0,
-      msj: error.message
-    };
-  }
-}
 const crearNuevaTecno = async (datos) => {
+  const result = await Swal.fire({
+    title: 'Confirmar acción',
+    html: `¿Estás seguro de crear la nueva tecnología <strong>${datos.nombre_nuevo}</strong>?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: "#0D6EFD",
+    cancelButtonText: 'Cancelar'
+  });
+  if (!result.isConfirmed) return;
+  
   datos.accion = 'crear';
   mostrarCarga(true);
   const res = await consultaPOST(datos);
@@ -223,26 +220,6 @@ const crearNuevaTecno = async (datos) => {
 };
 
 //OBTENER TECNOS
-export const consulta = async (payload) => {
-  try {
-    const params = new URLSearchParams();
-
-    if (payload.id) params.append("id", payload.id);
-    if (payload.nombre) params.append("nombre", payload.nombre);
-    if (payload.estado) params.append("inhabilitada", payload.estado === "true" ? "0" : "1");
-
-    const data = await apiFetch(`api_tecnologias.php?${params.toString()}`, {
-      method: 'GET'
-    });
-
-    return data;
-  } catch (error) {
-    return {
-      resultado: 0,
-      msj: error.message
-    };
-  }
-}
 const getTecnologias = async (filtros) => {
   if (filtros.id) filtros.id = parseInt(filtros.id);
   

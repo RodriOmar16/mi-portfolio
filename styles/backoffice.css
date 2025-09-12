@@ -88,6 +88,12 @@
 }
 
 /*vista - proyectos*/
+#tecno-nuevo {
+  min-height: 38px;
+  resize: vertical;
+  overflow-y: auto;
+}
+
 
 /* vista - tecnologias*/
 .row-acciones-tecno{
