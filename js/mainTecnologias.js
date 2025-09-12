@@ -70,6 +70,19 @@ if (formBuscar) {
   });
 }
 
+if (formEditar) {
+  formEditar.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const datos = Object.fromEntries(new FormData(e.target));
+    const id    = document.getElementById("tecnologia_id");
+    if(id){
+      datos.tecnologia_id = id.value;
+    }
+    
+    await editarTecno(datos);
+  });
+}
+
 if(buttonLimpiar){
   buttonLimpiar.addEventListener("click", () =>{
     formBuscar.reset();
@@ -147,7 +160,7 @@ const renderizarResultados = (lista) => {
       iconoEditar.setAttribute("data-bs-placement","bottom");
       iconoEditar.setAttribute("data-bs-title","Editar");
       iconoEditar.addEventListener("click", () => {
-        ejecutarEdicion(e.tecnologia_id);
+        abrirModalEdicion(e.tecnologia_id);
       });
       span.appendChild(iconoEditar);
     }
@@ -161,9 +174,7 @@ const renderizarResultados = (lista) => {
     iconoBloc.setAttribute("data-bs-placement","bottom");
     iconoBloc.setAttribute("data-bs-title",e.inhabilitada == 0 ? "Inhabilitar" : "Habilitar");
     iconoBloc.addEventListener("click", () => {
-      if(e.inhabilitada == 0){
-        ejecutarBloqueo(e.tecnologia_id);
-      }else ejecutarDesbloqueo(e.tecnologia_id);
+      bloqueoDesbloqueo(e.tecnologia_id, (e.inhabilitada == 0));
     });
     span.appendChild(iconoBloc);
 
@@ -242,29 +253,29 @@ const getTecnologias = async (filtros) => {
   renderizarResultados(tecnologias);
 };
 
-const ejecutarEdicion = (id) => {
+//abre el modal para editar y rellena los campos
+const abrirModalEdicion = (id) => {
   modalEditarTecno.classList.remove("d-none");
   const tecno = tecnologias.find(e => e.tecnologia_id == id);
-  console.log("tecno: ", tecno)
+
   for(const [clave, valor] of Object.entries(tecno)){
     const campo = formEditar.elements[clave];
     if(campo) {
       if(clave == "inhabilitada"){
-        campo.value = valor == 0 ? true : false;
+        campo.value = (valor == 0);
       }else campo.value = valor;
       
     };
   }
-  console.log("editando...")
 };
 
-const ejecutarBloqueo = async (id) => {
+const bloqueoDesbloqueo = async (id, bloquear) => {
   const tecno = tecnologias.find(e => e.tecnologia_id == id);
   if (!tecno) return;
 
   const result = await Swal.fire({
     title: 'Confirmar acción',
-    html: `¿Estás seguro de inhabilitar <strong>${tecno.nombre}</strong>?`,
+    html: `¿Estás seguro de ${bloquear ? 'inhabilitar' : 'habilitar'} <strong>${tecno.nombre}</strong>?`,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Aceptar',
@@ -273,7 +284,7 @@ const ejecutarBloqueo = async (id) => {
   });
   if (!result.isConfirmed) return;
 
-  let datos = { id, accion: 'bloquear' };
+  let datos = { id, accion: bloquear? 'bloquear' : 'desbloquear' };
 
   mostrarCarga(true);
   const res = await consultaPOST(datos);
@@ -281,7 +292,7 @@ const ejecutarBloqueo = async (id) => {
 
   if (res.resultado === 0) {
     return await Swal.fire({
-      title: 'Error de bloqueo',
+      title: 'Error ' + (bloquear ? 'de bloqueo' : 'al desbloquear'),
       text: res.msj,
       icon: 'error',
       confirmButtonText: 'Ok',
@@ -290,22 +301,35 @@ const ejecutarBloqueo = async (id) => {
   }
 
   await Swal.fire({
-    title: 'Bloqueo exitoso',
-    html: `Se inhabilitó correctamente la tecnología <strong>${tecno.nombre}</strong>`,
+    title: (bloquear ? 'Bloqueo' : 'Desbloqueo') +' exitoso',
+    html: `Se ${bloquear?'inhabilitó' : 'habilitó'} correctamente la tecnología <strong>${tecno.nombre}</strong>`,
     icon: 'success',
     confirmButtonText: 'Aceptar',
     confirmButtonColor: "#198754"
   });
+
+  await getTecnologias({
+    id: tecno.tecnologia_id,
+    nombre: tecno.nombre,
+    inhabilitada: tecno.inhabilitada
+  });
 };
 
-
-const ejecutarDesbloqueo = async (id) => {
-  const tecno = tecnologias.find(e => e.tecnologia_id == id);
-  if (!tecno) return;
+const editarTecno = async (datos) => {
+  if (Object.keys(datos).length == 0 || !datos){
+    return Swal.fire({
+      title: 'Objeto vacío',
+      text: `Los datos de la tecnología que deseas modificar no llegaron.`,
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: "#0D6EFD"
+    });
+  }
 
   const result = await Swal.fire({
     title: 'Confirmar acción',
-    html: `¿Estás seguro de habilitar <strong>${tecno.nombre}</strong>?`,
+    html: `¿Estás seguro aplicar cambios sobre la tecnología?`,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Aceptar',
@@ -314,7 +338,7 @@ const ejecutarDesbloqueo = async (id) => {
   });
   if (!result.isConfirmed) return;
 
-  let datos = { id, accion: 'desbloquear' };
+  datos.accion = "editar";
 
   mostrarCarga(true);
   const res = await consultaPOST(datos);
@@ -322,7 +346,7 @@ const ejecutarDesbloqueo = async (id) => {
 
   if (res.resultado === 0) {
     return await Swal.fire({
-      title: 'Error al desbloquear',
+      title: 'Error al editar',
       text: res.msj,
       icon: 'error',
       confirmButtonText: 'Ok',
@@ -331,10 +355,17 @@ const ejecutarDesbloqueo = async (id) => {
   }
 
   await Swal.fire({
-    title: 'Desbloqueo exitoso',
-    html: `Se habilitó correctamente la tecnología <strong>${tecno.nombre}</strong>`,
+    title: 'Modificación exitosa',
+    html: `Se modificaron correctamente los datos de la tecnología <strong>${datos.nombre}</strong>`,
     icon: 'success',
     confirmButtonText: 'Aceptar',
     confirmButtonColor: "#198754"
+  });
+
+  resetearValoresEditar();
+  await getTecnologias({
+    id: datos.tecnologia_id,
+    nombre: datos.nombre,
+    inhabilitada: datos.inhabilitada
   });
 };

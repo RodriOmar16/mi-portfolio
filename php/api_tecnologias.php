@@ -35,7 +35,7 @@
           case 'crear':
             crearTecnologia($data);
             break;
-          case 'actualizar':
+          case 'editar':
             actualizarTecnologia($data);
             break;
           case 'eliminar':
@@ -52,15 +52,14 @@
         }
       break;
 
-      default:
-        sendResponse(0, "Método no permitido.");
+      default: sendResponse(0, "Método no permitido.");
     }
   } catch (\Throwable $e) {
     error_log("Excepción global: " . $e->getMessage());
     handleException($e);
   }
 
-  // Función GET
+  // get
   function obtenerTecnologias($data) {
     global $conn;
 
@@ -130,7 +129,7 @@
     }
   }
 
-  // Función POST: crear
+  // crear
   function crearTecnologia($data) {
     global $conn;
 
@@ -169,13 +168,61 @@
     }
   }
 
-  // Funciones futuras: actualizarTecnologia, eliminarTecnologia
+  // editar
   function actualizarTecnologia($data) {
-    sendResponse(0, "Función actualizarTecnologia aún no implementada.");
+    global $conn;
+
+    if (!isset($data['tecnologia_id']) || !isset($data['nombre']) || !isset($data['inhabilitada'])) {
+      sendResponse(0, "No es posible continuar, falta datos.");
+    }
+    $id     = $data['tecnologia_id'];
+    $nombre = $data['nombre'];
+    $estado = $data['inhabilitada'];
+    try {
+      //Controlo que no tenga los cambios que me llegan de la web
+      $sql  = "SELECT count(*) as cantidad FROM tecnologias WHERE tecnologia_id = ? AND inhabilitada = ? AND nombre = ?";
+      $stmt = $conn->prepare($sql); 
+      if (!$stmt) {
+        throw new Exception("Error en prepare: " . $conn->error);
+      }
+      $stmt->bind_param("iis", $id, $estado, $nombre);
+      $stmt->execute();
+
+      $result = $stmt->get_result();
+      if (!$result) {
+        throw new Exception("Error al obtener resultados: " . $conn->error);
+      }
+      $row = $result->fetch_assoc();
+      $cantidad = intval($row['cantidad']);
+
+      if($cantidad > 0){
+        sendResponse(0, "La tecnología ya está tiene los cambios que intentas aplicar.");
+      }
+
+      //Procedo a actualizar
+      $sqlUpdate  = "UPDATE tecnologias SET nombre = ?, inhabilitada = ? WHERE tecnologia_id = ?";
+      $stmtUpdate = $conn->prepare($sqlUpdate);
+      if(!$stmtUpdate){
+        throw new Exception("Error en prepare: " . $conn->error);
+      }
+      $stmtUpdate->bind_param("sii",$nombre, $estado, $id);
+      $stmtUpdate->execute();
+
+      if ($stmtUpdate->affected_rows === 1) {
+        sendResponse(1, "Se actualizó correctamente.");
+      } else {
+        sendResponse(0, "No se pudo modificar la tecnología.");
+      }
+
+    } catch (\Throwable $e) {
+      error_log("Excepción en editar: " . $e->getMessage());
+      handleException($e);
+    }
   }
 
+  //eliminar
   function eliminarTecnologia($data) {
-    sendResponse(0, "Función eliminarTecnologia aún no implementada.");
+    
   }
 
   //bloquear:
@@ -227,10 +274,11 @@
         sendResponse(0, "No se pudo inhabilitar la tecnología.");
       }
     } catch (\Throwable $e) {
-      error_log("Excepción en bloquearDesbloquear: " . $e->getMessage());
+      error_log("Excepción en bloquear: " . $e->getMessage());
       handleException($e);
     }
   }
+
   //desbloquear
   function desbloquear($data){
     global $conn;
@@ -282,7 +330,7 @@
       }
 
     } catch (\Throwable $e) {
-      error_log("Excepción en bloquearDesbloquear: " . $e->getMessage());
+      error_log("Excepción en desbloquear: " . $e->getMessage());
       handleException($e);
     }
   }
