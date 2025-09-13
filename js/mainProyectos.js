@@ -16,7 +16,10 @@ const buttonCerrarNuevo   = document.getElementById("cerrar-icon");
 const buttonCancelNuevo   = document.getElementById("cancelar-nuevo");
 const buttonCerrarEditar  = document.getElementById("cerrar-editar");
 const buttonCancelEditar  = document.getElementById("cancelar-editar");
+const buttonLimpiar       = document.getElementById("limpiar");
+const inputBusqueda       = document.getElementById("busqueda");
 let tecnologias           = [];
+let proyectos             = [];
 
 const choices = new Choices(selectOptionsNuevo, {
     removeItemButton: true,
@@ -65,6 +68,15 @@ if(formNuevo){
   });
 }
 
+if(formBuscar){
+  formBuscar.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const datos = Object.fromEntries(new FormData(e.target));
+    console.log("datos: ", datos);
+    await getProyectos(datos);
+  });
+}
+
 if(buttonCancelNuevo){
   buttonCancelNuevo.addEventListener("click", () => {
     resetearValores();
@@ -79,6 +91,22 @@ if(buttonCerrarEditar){
 if(buttonCancelEditar){
   buttonCancelEditar.addEventListener("click", () => {
     resetearValoresEditar();
+  });
+}
+
+if(buttonLimpiar){
+  buttonLimpiar.addEventListener("click", () =>{
+    formBuscar.reset();
+  });
+}
+
+if(inputBusqueda){
+  inputBusqueda.addEventListener('input', (e) => {
+    const texto = e.target.value.toLowerCase();
+    const filtrados = proyectos.filter(e => e.nombre.toLowerCase().includes(texto) || 
+      String(e.proyecto_id).includes(texto) || e.fechaDesdeNuevo.includes(texto)
+    );
+    renderizarResultados(filtrados);
   });
 }
 
@@ -164,4 +192,116 @@ const crearProyectos = async (datos) => {
 
   resetearValores();
   //mandar a buscarlo por filtros
+  await getProyectos({
+    estado: "",
+    fecha_desde: datos.fechaDesdeNuevo,
+    fecha_hasta: datos.fechaHastaNuevo,
+    nombre: datos.nombre,
+    proyecto_id: datos.id,
+  });
+};
+const renderizarResultados = async (lista) => {
+const tbody = document.getElementById("tbody-resultados");
+  tbody.innerHTML = "";
+
+  if(lista.length == 0){
+    const trSinDatos  = document.createElement("tr");
+    const tdSinDatos  = document.createElement("td");
+    tdSinDatos.setAttribute("colspan", "7");
+    
+    const divSinDatos = document.createElement("div");
+    divSinDatos.className = "w-60 mt-3 alert d-flex align-items-center justify-content-center text-wrap fs-5";
+    divSinDatos.id = "sin-resultados";
+    
+    const icono = document.createElement("i");
+    icono.className = "fa-solid fa-triangle-exclamation";
+    divSinDatos.appendChild(icono);
+
+    const texto = document.createTextNode(" No hay resultados para mostrar");
+    divSinDatos.appendChild(texto);
+
+    tdSinDatos.appendChild(divSinDatos);
+    trSinDatos.appendChild(tdSinDatos);
+    tbody.appendChild(trSinDatos);
+    return;
+  }
+  lista.forEach(e => {
+    const fila     = document.createElement("tr");
+    
+    const id       = document.createElement("th");
+    id.setAttribute("scope", "row");
+    id.setAttribute("data-label", "ID");
+    id.textContent = e.proyecto_id;
+    fila.appendChild(id);
+
+    const nombre   = document.createElement("td");
+    nombre.setAttribute("data-label", "Nombre");
+    nombre.textContent = e.nombre;
+    fila.appendChild(nombre);
+
+    const fechaDesde = document.createElement("td");
+    fechaDesde.setAttribute("data-label", "Fecha Desde");
+    fechaDesde.textContent = e.fecha_desde;
+    fila.appendChild(fechaDesde);
+
+    const fechaHasta = document.createElement("td");
+    fechaHasta.setAttribute("data-label", "Fecha Hasta");
+    fechaHasta.textContent = e.fecha_hasta && e.fecha_hasta != '0000-00-00' ? e.fecha_hasta : '';
+    fila.appendChild(fechaHasta);
+
+    const estado   = document.createElement("td");
+    estado.setAttribute("data-label", "Estado");
+    estado.textContent = e.ihabilitada == 0 ? 'Activo' : 'Inactiva';
+    fila.appendChild(estado);
+
+    const acciones = document.createElement("td");
+    acciones.setAttribute("data-label", "Acciones");
+    acciones.classList.add("row-acciones-tecno");
+
+    const span = document.createElement("span");
+
+    if(e.inhabilitada == 0){
+      const iconoEditar = document.createElement("i");
+      iconoEditar.id = `editar-${e.proyecto_id}`;
+      iconoEditar.setAttribute("type", "button");
+      iconoEditar.setAttribute("title", "Editar");
+      iconoEditar.className = "fa-solid fa-pencil me-1 text-warning";
+      iconoEditar.setAttribute("data-bs-toggle","tooltip");
+      iconoEditar.setAttribute("data-bs-placement","bottom");
+      iconoEditar.setAttribute("data-bs-title","Editar");
+      iconoEditar.addEventListener("click", () => {
+        abrirModalEdicion(e.proyecto_id);
+      });
+      span.appendChild(iconoEditar);
+    }
+
+    const iconoBloc   = document.createElement("i");
+    iconoBloc.id = `blocked-${e.proyecto_id}`;
+    iconoBloc.setAttribute("type", "button");
+    iconoBloc.setAttribute("title", e.inhabilitada == 0 ? "Inhabilitar" : "Habilitar");
+    iconoBloc.className =  e.inhabilitada == 0 ? "fa-solid fa-ban text-danger" : "fa-solid fa-check text-success";
+    iconoBloc.setAttribute("data-bs-toggle","tooltip");
+    iconoBloc.setAttribute("data-bs-placement","bottom");
+    iconoBloc.setAttribute("data-bs-title",e.inhabilitada == 0 ? "Inhabilitar" : "Habilitar");
+    iconoBloc.addEventListener("click", () => {
+      bloqueoDesbloqueo(e.proyecto_id, (e.inhabilitada == 0));
+    });
+    span.appendChild(iconoBloc);
+
+    acciones.appendChild(span);
+    fila.appendChild(acciones);
+
+    tbody.appendChild(fila);
+  }); 
+}
+const getProyectos = async(filtros) => {
+  if(filtros.proyecto_id) filtros.proyecto_id = parseInt(filtros.proyecto_id);
+  filtros.tecnologia = filtros.tecnologia !== 'null' ? parseInt(filtros.tecnologia) : null;
+
+  mostrarCarga(true);
+  const res = await consultaProyectos(filtros);
+  mostrarCarga(false);
+
+  proyectos = res.proyectos;
+  renderizarResultados(proyectos);
 };

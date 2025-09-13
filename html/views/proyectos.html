@@ -10,40 +10,40 @@
           <i class="fa-solid fa-circle-plus text-success button-nuevo" ></i>
         </button>
       </div>
-      <form class="form-buscar">
+      <form class="form-buscar" id="form-buscar">
         <div class="row">
           <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="id" class="form-label">Id</label>
-            <input type="number" class="form-control" id="id">
+            <input name="proyecto_id" type="number" class="form-control" id="id">
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="nombre" class="form-label">Nombre </label>
-            <input type="text" class="form-control" id="nombre">
+            <input name="nombre" type="text" class="form-control" id="nombre">
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="fechaDesde" class="form-label">Fecha desde</label>
-            <input type="date" class="form-control" id="fechaDesde">
+            <input name="fecha_desde" type="date" class="form-control" id="fechaDesde">
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="fechaHasta" class="form-label">Fecha hasta</label>
-            <input type="date" class="form-control" id="fechaHasta">
+            <input name="fecha_hasta" type="date" class="form-control" id="fechaHasta">
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="tecnologias" class="form-label">Tecnologias</label>
-            <select name="tecnologias" id="tecnologias" class="form-select">
+            <select name="tecnologia" id="tecnologias" class="form-select">
               <!-- Se cargan de form dinámicas -->
             </select>
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <label for="estados" class="form-label">Estado</label>
-            <select name="estados" id="estados" class="form-select">
+            <select name="estado" id="estados" class="form-select">
               <option value="true">Activo</option>
               <option value="false">Inactivo</option>
             </select>
           </div>
           <div class="col-12 contenedor-button-buscar mt-3">
             <i title="Limpiar filtros" class="fa-solid fa-broom text-warning me-2" id="limpiar" style="font-size: 25px;"></i>
-            <button title="Buscar" class="btn btn-primary" id="buttonBuscar"> <i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+            <button type="submit" title="Buscar" class="btn btn-primary" id="buttonBuscar"> <i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
           </div>
         </div>
       </form>
@@ -63,7 +63,6 @@
                 <th scope="col">Nombre</th>
                 <th scope="col">Fecha Inicio</th>
                 <th scope="col">Fecha Hasta</th>
-                <th scope="col">Tecnología</th>
                 <th scope="col">Estado</th>
                 <th scope="col" class="row-acciones-tecno">Acciones</th>
               </tr>

@@ -44,6 +44,7 @@ const iniciarValidarLogin = async (user, password) => {
 const getUser = async (payload) => {
   return await apiFetch('validar_login.php',{
     method: 'POST',
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    credentials: 'include'
   });
 };

@@ -1,3 +1,19 @@
+
+const controlRuta = async() => {
+  try {
+    const res = await fetch('../php/validar_sesion.php',{
+      credentials: 'include'
+    });
+    if(!res.ok){
+      console.log("denegado")
+      window.location.href = 'login.html';
+    }
+  } catch (error) {
+    console.log("error general")
+  }
+};
+await controlRuta();
+
 const cargarInfoUser = () => {
   const name = localStorage.getItem("usuario");
   const encabezado = document.getElementById("user-name");
@@ -28,6 +44,13 @@ export const cargarVistas = async (nombreVista) => {
     script.src   = `../js/main${nombreVista.charAt(0).toUpperCase() + nombreVista.slice(1)}.js?ts=${Date.now()}`;
     script.id    = scriptId;
 
+    script.onload = () => {
+      const nombreFuncion = `init${nombreVista.charAt(0).toUpperCase() + nombreVista.slice(1)}`;
+      if (typeof window[nombreFuncion] === 'function') {
+        window[nombreFuncion]();
+      }
+    };
+
     document.body.appendChild(script);
   } catch (error) {
     contenedor.innerHTML = "<p>Error al cargar la vista.</p>";
@@ -50,3 +73,24 @@ enlaces.forEach(e => {
 
 window.cargarVistas = cargarVistas;
 cargarVistas("inicio");
+
+//-----------------------------
+const buttonSalir = document.getElementById("button-salir");
+if (buttonSalir) {
+  buttonSalir.addEventListener("click", async () => {
+    console.log("entrooo")
+    try {
+      const res = await fetch('../php/cerrar_sesion.php', {
+        credentials: 'include'
+      });
+      if (res.ok) {
+        localStorage.removeItem("usuario");
+        window.location.href = '/portfolio/index.html';
+      } else {
+        console.error("Error al cerrar sesión");
+      }
+    } catch (error) {
+      console.error("Error general al cerrar sesión:", error);
+    }
+  });
+}
