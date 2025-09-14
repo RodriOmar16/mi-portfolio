@@ -268,4 +268,13 @@
       handleException($e);
     }
   }
+
+  //bloquear
+  function bloquear($data){
+    global $conn;
+  }
+  //desbloquear
+  function desbloquear($data){
+    global $conn;
+  }
 ?>

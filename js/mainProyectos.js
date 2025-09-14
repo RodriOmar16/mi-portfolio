@@ -6,6 +6,7 @@ import { ordenar } from "./utils.js";
 //data
 const selectOptions       = document.getElementById("tecnologias");
 const selectOptionsNuevo  = document.getElementById("tecno-nuevo");
+const selectOptionsEditar = document.getElementById("tecno-editar");
 const modalNuevoProyecto  = document.getElementById("modal-nuevo-proyecto");
 const modalEditarProyecto = document.getElementById("modal-editar-proyecto");
 const formNuevo           = document.getElementById("form-nuevo");
@@ -22,11 +23,13 @@ let tecnologias           = [];
 let proyectos             = [];
 
 const choices = new Choices(selectOptionsNuevo, {
-    removeItemButton: true,
-    placeholderValue: "Seleccioná tecnologías",
-    searchEnabled: true,
-    shouldSort: false
-  });
+  removeItemButton: true,
+  placeholderValue: "Selecc. tecnologías",
+  searchEnabled: true,
+  shouldSort: false
+});
+
+let choicesEdit;
 
 const resetearValores = () => {
   modalNuevoProyecto.classList.add("d-none");
@@ -126,9 +129,10 @@ await obtenerTecnos();
 //construir de forma dinámica las opciones de tecnologia 
 const agregarOptionsTecnos = () => {
   const option = document.createElement("option");
-    option.setAttribute("value", null);
-    option.textContent = "";
-    selectOptions.appendChild(option);
+  option.setAttribute("value", null);
+  option.textContent = "";
+  selectOptions.appendChild(option);
+ 
   tecnologias.forEach(e => {
     const option = document.createElement("option");
     option.setAttribute("value", e.tecnologia_id);
@@ -303,5 +307,78 @@ const getProyectos = async(filtros) => {
   mostrarCarga(false);
 
   proyectos = res.proyectos;
+  console.log("proyectos: ", proyectos);
   renderizarResultados(proyectos);
 };
+
+const abrirModalEdicion = (id) => {
+  console.log("llegó: ", id)
+  modalEditarProyecto.classList.remove("d-none");
+  const project = proyectos.find(e => e.proyecto_id == id);
+  console.log("project: ",project)
+  console.log("formEditar.elements: ", formEditar.elements)
+  for(const [clave, valor] of Object.entries(project)){
+    console.log("clave: ", clave);
+    console.log("valor: ", valor);
+    const campo = formEditar.elements[clave];
+    console.log("campo: ", campo)
+    if(campo && clave!='tecnologias') {
+      if(clave == "inhabilitada"){
+        campo.value = (valor == 0);
+      }else campo.value = valor;
+    };
+  }
+  choicesEdit = new Choices(selectOptionsEditar, {
+    removeItemButton: true,
+    searchEnabled: true,
+    shouldSort: false,
+    choices: project.tecnologias
+  });
+
+};
+
+const bloqueoDesbloqueo = async (id, bloquear) => {
+  const project = tecnologias.find(e => e.tecnologia_id == id);
+    if (!project) return;
+  
+    const result = await Swal.fire({
+      title: 'Confirmar acción',
+      html: `¿Estás seguro de ${bloquear ? 'inhabilitar' : 'habilitar'} <strong>${project.nombre}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: "#0D6EFD",
+      cancelButtonText: 'Cancelar'
+    });
+    if (!result.isConfirmed) return;
+  
+    let datos = { id, accion: bloquear? 'bloquear' : 'desbloquear' };
+  
+    mostrarCarga(true);
+    const res = await consultaPOST(datos);
+    mostrarCarga(false);
+  
+    if (res.resultado === 0) {
+      return await Swal.fire({
+        title: 'Error ' + (bloquear ? 'de bloqueo' : 'al desbloquear'),
+        text: res.msj,
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: "#0D6EFD"
+      });
+    }
+  
+    await Swal.fire({
+      title: (bloquear ? 'Bloqueo' : 'Desbloqueo') +' exitoso',
+      html: `Se ${bloquear?'inhabilitó' : 'habilitó'} correctamente el proyecto <strong>${project.nombre}</strong>`,
+      icon: 'success',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: "#198754"
+    });
+  
+    await getProyectos({
+      id: project.tecnologia_id,
+      nombre: project.nombre,
+      inhabilitada: project.inhabilitada
+    });
+}; 

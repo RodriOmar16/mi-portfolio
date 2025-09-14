@@ -140,7 +140,7 @@
     <div class="modal-overlay"></div>
     <div class="modal-content-proyectos">
       <div class="d-flex justify-content-between">
-        <h5 class="mb-0">Nuevo Proyectos</h5>
+        <h5 class="mb-0">Editar Proyectos</h5>
         <span><i title="Cerrar" class="fa-solid fa-xmark" style="font-size: 20px;" id="cerrar-editar"></i></span>
       </div>
       <hr>
@@ -148,7 +148,7 @@
         <div class="row">
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="id_editar" class="form-label">Id </label>
-            <input type="number" class="form-control" name="proyecto_id" id="id_editar">
+            <input disabled type="number" class="form-control" name="proyecto_id" id="id_editar">
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="nombre_editar" class="form-label">Nombre </label>
@@ -156,11 +156,11 @@
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="fechaDesde_editar" class="form-label">Fecha desde</label>
-            <input type="date" class="form-control" name="fechaDesdeEditar" id="fechaDesde-editar">
+            <input type="date" class="form-control" name="fecha_desde" id="fechaDesde-editar">
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="fechaHasta_editar" class="form-label">Fecha hasta</label>
-            <input type="date" class="form-control" name="fechaHastaEditar" id="fechaHasta-editar">
+            <input type="date" class="form-control" name="fecha_hasta" id="fechaHasta-editar">
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6">
             <label for="tecno-editar" class="form-label">Tecnologías</label>
@@ -170,7 +170,7 @@
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6 mt-3">
             <label for="estado-editar" class="form-label">Estado</label>
-            <select name="estado" id="estado-editar" class="form-select">
+            <select name="inhabilitada" id="estado-editar" class="form-select">
               <option value="true">Activo</option>
               <option value="false">Inactivo</option>
             </select>

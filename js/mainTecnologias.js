@@ -241,7 +241,6 @@ const abrirModalEdicion = (id) => {
       if(clave == "inhabilitada"){
         campo.value = (valor == 0);
       }else campo.value = valor;
-      
     };
   }
 };
