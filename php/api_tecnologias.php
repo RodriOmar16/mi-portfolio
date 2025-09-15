@@ -94,7 +94,7 @@
 
       $stmt = $conn->prepare($sql);
       if (!$stmt) {
-        throw new Exception("Error en prepare: " . $conn->error);
+        throw new Exception("Error en prepare del getTecnologia: " . $conn->error);
       }
 
       if (!empty($params)) {
@@ -154,7 +154,7 @@
       
       $result = $stmtControl->get_result();
       if (!$result) {
-        throw new Exception("Error al obtener resultados: " . $conn->error);
+        throw new Exception("Error al crear la Tecnología: " . $conn->error);
       }
       $row = $result->fetch_assoc();
       $cantidad = intval($row['cantidad']);
@@ -184,7 +184,7 @@
       }
     } catch (\Exception $e) {
       $conn->rollback();
-      error_log("Excepción atrapada: " . $e->getMessage());
+      error_log("Excepción crear tecnología: " . $e->getMessage());
       handleException($e);
     }
   }
@@ -205,14 +205,14 @@
       $sql  = "SELECT count(*) as cantidad FROM tecnologias WHERE tecnologia_id = ? AND inhabilitada = ? AND nombre = ?";
       $stmt = $conn->prepare($sql); 
       if (!$stmt) {
-        throw new Exception("Error en prepare: " . $conn->error);
+        throw new Exception("Error en prepare del actualizar: " . $conn->error);
       }
       $stmt->bind_param("iis", $id, $estado, $nombre);
       $stmt->execute();
 
       $result = $stmt->get_result();
       if (!$result) {
-        throw new Exception("Error al obtener resultados: " . $conn->error);
+        throw new Exception("Error al obtener resultados actualizar " . $conn->error);
       }
       $row = $result->fetch_assoc();
       $cantidad = intval($row['cantidad']);
@@ -225,7 +225,7 @@
       $sqlUpdate  = "UPDATE tecnologias SET nombre = ?, inhabilitada = ? WHERE tecnologia_id = ?";
       $stmtUpdate = $conn->prepare($sqlUpdate);
       if(!$stmtUpdate){
-        throw new Exception("Error en prepare: " . $conn->error);
+        throw new Exception("Error en prepare del intento del update: " . $conn->error);
       }
       $stmtUpdate->bind_param("sii",$nombre, $estado, $id);
       $stmtUpdate->execute();
@@ -266,7 +266,7 @@
 
       $stmt = $conn->prepare($sql);
       if (!$stmt) {
-        throw new Exception("Error en prepare: " . $conn->error);
+        throw new Exception("Error en prepare del control del bloqueo: " . $conn->error);
       }
 
       $stmt->bind_param("i", $id);
@@ -274,7 +274,7 @@
       
       $result = $stmt->get_result();
       if (!$result) {
-        throw new Exception("Error al obtener resultados: " . $conn->error);
+        throw new Exception("Error al obtener resultados del control de bloqueo: " . $conn->error);
       }
       $row = $result->fetch_assoc();
       $cantidad = intval($row['cantidad']);
@@ -288,7 +288,7 @@
       $stmtUpdate = $conn->prepare($sqlUpdate);
 
       if (!$stmtUpdate) {
-        throw new Exception("Error en prepare: " . $conn->error);
+        throw new Exception("Error en prepare del update del bloqueo: " . $conn->error);
       }
 
       $stmtUpdate->bind_param("i", $id);
@@ -324,7 +324,7 @@
       $stmt = $conn->prepare($sql);
       if(!$stmt){
         throw new Exception("Error en prepare: " . $conn->error);
-        sendResponse(0,"Error en prepare: " . $conn->error);
+        sendResponse(0,"Error en prepare del control del desbloqueo: " . $conn->error);
       }
       $stmt->bind_param("i", $id);
       $stmt->execute();
@@ -332,7 +332,7 @@
       $result = $stmt->get_result();
       if(!$result){
          throw new Exception("Error al obtener resultados: " . $conn->error);
-         sendResponse(0, "Error al obtener resultados: " . $conn->error);
+         sendResponse(0, "Error al obtener resultados del control de desbloqueo: " . $conn->error);
       }
       $row = $result->fetch_assoc();
       $cantidad = intval($row['cantidad']);
@@ -347,7 +347,7 @@
 
       if(!$stmtUpdate){
         throw new Exception("Error en prepare (update): " . $conn->error);
-        sendResponse(0, "Error en prepare (update): " . $conn->error);
+        sendResponse(0, "Error en prepare (update desbloquear): " . $conn->error);
       }
 
       $stmtUpdate->bind_param("i", $id);

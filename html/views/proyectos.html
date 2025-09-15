@@ -146,38 +146,42 @@
       <hr>
       <form id="form-editar">
         <div class="row">
-          <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
             <label for="id_editar" class="form-label">Id </label>
             <input disabled type="number" class="form-control" name="proyecto_id" id="id_editar">
           </div>
-          <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
             <label for="nombre_editar" class="form-label">Nombre </label>
             <input type="text" class="form-control" name="nombre" id="nombre_editar">
           </div>
-          <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
             <label for="fechaDesde_editar" class="form-label">Fecha desde</label>
             <input type="date" class="form-control" name="fecha_desde" id="fechaDesde-editar">
           </div>
-          <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
             <label for="fechaHasta_editar" class="form-label">Fecha hasta</label>
             <input type="date" class="form-control" name="fecha_hasta" id="fechaHasta-editar">
           </div>
-          <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
             <label for="tecno-editar" class="form-label">Tecnologías</label>
-            <select name="tecnologia" id="tecno-editar" class="form-select">
+            <select multiple name="tecnologias" id="tecno-editar" class="form-select">
               <!-- Carga dinámica -->
             </select>
           </div>
-          <div class="col-lg-3 col-md-4 col-sm-6 mt-3">
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
             <label for="estado-editar" class="form-label">Estado</label>
             <select name="inhabilitada" id="estado-editar" class="form-select">
               <option value="true">Activo</option>
               <option value="false">Inactivo</option>
             </select>
           </div>
-          <div class="col-12">
+          <div class="col-lg-6 col-md-6 col-sm-6 mb-2">
+            <label for="url-editar" class="form-label">URL Fotos </label>
+            <input type="text" class="form-control" name="url_fotos" id="url-editar">
+          </div>
+          <div class="col-12  mb-2">
             <label for="descripcion_editar" class="form-label">Descripción </label>
-            <textarea name="descripcion" id="descripcion-editar" class="form-control"></textarea>
+            <textarea rows="4" name="descripcion" id="descripcion-editar" class="form-control"></textarea>
           </div>
         </div>
         <div class="modal-actions">

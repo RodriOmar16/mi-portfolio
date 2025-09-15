@@ -64,13 +64,21 @@
     global $conn;
 
     try {
-      $sql    = 
+      $sql = 
       "SELECT
-        p.proyecto_id, p.nombre as nombre_proyecto, p.descripcion, p.fechaDesde, p.fechaHasta, p.inhabilitada,
-        p.url_fotos, t.tecnologia_id, t.nombre as nombre_tecnologia
+        p.proyecto_id, 
+        p.nombre as nombre_proyecto, 
+        p.descripcion, 
+        p.fechaDesde, 
+        p.fechaHasta, 
+        p.inhabilitada,
+        p.url_fotos, 
+        t.tecnologia_id, 
+        t.nombre as nombre_tecnologia
       FROM proyectos p
       INNER JOIN proyectos_tecnologia pt ON p.proyecto_id = pt.proyecto_id
       INNER JOIN tecnologias t ON pt.tecnologia_id = t.tecnologia_id";
+
       $where  = [];
       $params = [];
       $types  = "";
@@ -83,9 +91,9 @@
         $types   .= "i";
       }
 
-      if (isset($data['tecnologia_id'])) {
+      if (isset($data['tecnologia'])) {
         $where[]  = "t.tecnologia_id = ?";
-        $params[] = $data['tecnologia_id'];
+        $params[] = $data['tecnologia'];
         $types   .= "i";
       }
 
@@ -108,20 +116,27 @@
         $types   .= "s";
       }
 
+      if (!isset($data['fecha_desde']) && isset($data['fecha_hasta'])) {
+        $where[]  = "p.fechaHasta = ?";
+        $params[] = $data['fecha_hasta'];
+        $types   .= "s";
+      }
+
       if (isset($data['fecha_desde']) && isset($data['fecha_hasta'])) {
-        $where[]  = "p.fechaDesde <= ?";
+        $where[]  = "p.fechaDesde >= ?";
         $params[] = $data['fecha_desde'];
         $types   .= "s";
 
-        $where[]  = "p.fechaHasta >= ?";
+        $where[]  = "p.fechaHasta <= ?";
         $params[] = $data['fecha_hasta'];
         $types   .= "s";
+
       }
 
       if (!empty($where)) {
         $sql .= " WHERE " . implode(" AND ", $where);
       }
-
+      
       $stmt = $conn->prepare($sql);
       if (!$stmt) {
         throw new Exception("Error en prepare: " . $conn->error);
@@ -147,12 +162,6 @@
         throw new Exception("Error al obtener resultados: " . $conn->error);
       }
 
-      /*$tecnos = [];
-      while ($row = $result->fetch_assoc()) {
-        $tecnos[] = $row;
-      }
-
-      sendResponse(1, "Listado obtenido", ['proyectos' => $tecnos]);*/
       $proyectos = [];
       while ($row = $result->fetch_assoc()) {
         $id = $row['proyecto_id'];
@@ -177,7 +186,7 @@
       }
 
       // Reindexar para enviar como array plano
-      sendResponse(1, "Listado obtenido", ['proyectos' => array_values($proyectos)]);
+      sendResponse(1, "Listado de proyectos", ['proyectos' => array_values($proyectos)]);
 
     } catch (\Throwable $e) {
       error_log("Excepción en obtenerProyectos: " . $e->getMessage());
@@ -206,6 +215,10 @@
     $fechaHasta  = $data['fechaHastaNuevo'];
     $tecnologias = $data['tecnologias'];
 
+    if (strtotime($fechaDesde) >= strtotime($fechaHasta)) {
+      sendResponse(0, "La fecha de inicio debe ser estrictamente menor que la fecha de finalización.");
+    }
+
     try {
       $conn->autocommit(false);
       //controlo que no exista ese proyecto creado
@@ -214,7 +227,7 @@
       
       if(!$stmtControl){
         error_log("Prepare failed: ".$conn->error);
-        sendResponse(0, "Ocurrió un error al intentar obtener los datos del proyecto.");
+        sendResponse(0, "Ocurrió un error al intentar controlar si ya existe el proyecto: ".$conn->error);
       }
       $stmtControl->bind_param("ssssis", $nombre, $descripcion, $fechaDesde, $fechaHasta, $estado, $url);
       $stmtControl->execute();
@@ -222,6 +235,7 @@
       $result = $stmtControl->get_result();
       if(!$result){
         throw new Exception("Error al obtener resultados: " . $conn->error);
+        sendResponse(0, "Ocurrió un error al obtener resultados del control al crear: ".$conn->error);
       }
       $row = $result->fetch_assoc();
       $cantidad = intval($row['cantidad']);
@@ -235,7 +249,7 @@
       $stmt = $conn->prepare($sql);
       if(!$stmt){
         error_log("Prepare failed: ".$conn->error);
-        sendResponse(0, "Error al preparar la consulta para insertar proyectos.");
+        sendResponse(0, "Error al preparar la consulta para insertar proyectos: ".$conn->error);
       }
       $stmt->bind_param("ssssis", $nombre, $descripcion, $fechaDesde, $fechaHasta, $estado, $url);
       $stmt->execute();
@@ -272,9 +286,127 @@
   //bloquear
   function bloquear($data){
     global $conn;
+    if(!isset($data['id'])){
+      sendResponse(0, "No llegó el id del proyecto.");
+    }
+
+    $id = $data['id'];
+
+    try {
+      $conn->autocommit(false);
+      //controlo que no este inhabilitada ya
+      $sql  = "SELECT count(*) as cantidad FROM proyectos p WHERE p.inhabilitada = 1 AND p.proyecto_id = ?";
+      $stmt = $conn->prepare($sql);
+      if(!$stmt){
+        throw new Exception("Error en prepare: " . $conn->error);
+        sendResponse(0, "Error en el prepare del control de bloqueo: ", $conn->error);
+      }
+
+      $stmt->bind_param("i", $id);
+      $stmt->execute();
+
+      $result = $stmt->get_result();
+      if(!$result){
+        throw new Exception("Error al obtener resultados: " . $conn->error);
+        sendResponse(0, "Error al obtener los resultados del control de bloqueo: ".$conn->error);
+      }
+
+      $row = $result->fetch_assoc();
+      $cantidad = intval($row['cantidad']);
+      if($cantidad > 0){
+        sendResponse(0, "El proyecto ya se encuentra en estado inhabilitado.");
+      }
+
+      //Se procede a bloquear
+      $sqlBloq  = "UPDATE proyectos SET inhabilitada = 1 WHERE proyecto_id = ?";
+      $stmtBloq = $conn->prepare($sqlBloq);
+
+      if (!$stmtBloq) {
+        throw new Exception("Error en prepare: " . $conn->error);
+        sendResponse(0, "Al momento de intentar armar la consulta para bloquear el proyecto ocurrió un error: ".$conn->error);
+      }
+
+      $stmtBloq->bind_param("i", $id);
+      $stmtBloq->execute();
+
+      if($stmtBloq->affected_rows === 1){
+        $conn->commit();
+        sendResponse(1, "Proyecto bloqueado con éxito.");
+      }else{
+        $conn->rollback();
+        sendResponse(0, "No fue posible bloquear el proyecto. Revisar.");
+      }
+    } catch (\Throwable $e) { 
+      $conn->rollback();
+      error_log("Excepción en bloquear: " . $e->getMessage());
+      handleException($e);
+    }
   }
+
   //desbloquear
   function desbloquear($data){
     global $conn;
+    if(!isset($data['id'])){
+      sendResponse(0, "No llegó el id del proyecto.");
+    }
+
+    $id = $data['id'];
+
+    try {
+      $conn->autocommit(false);
+      //controlo que no este inhabilitada ya
+      $sql  = "SELECT count(*) as cantidad FROM proyectos p WHERE p.inhabilitada = 0 AND p.proyecto_id = ?";
+      $stmt = $conn->prepare($sql);
+      if(!$stmt){
+        throw new Exception("Error en prepare: " . $conn->error);
+        sendResponse(0, "Error en el prepare del control de desbloqueo: ", $conn->error);
+      }
+
+      $stmt->bind_param("i", $id);
+      $stmt->execute();
+
+      $result = $stmt->get_result();
+      if(!$result){
+        throw new Exception("Error al obtener resultados: " . $conn->error);
+        sendResponse(0, "Error al obtener los resultados del control de desbloqueo: ".$conn->error);
+      }
+
+      $row = $result->fetch_assoc();
+      $cantidad = intval($row['cantidad']);
+      if($cantidad > 0){
+        sendResponse(0, "El proyecto ya se encuentra en estado habilitado.");
+      }
+
+      //Se procede a bloquear
+      $sqlDesbloq  = "UPDATE proyectos SET inhabilitada = 0 WHERE proyecto_id = ?";
+      $stmtDesbloq = $conn->prepare($sqlDesbloq);
+
+      if (!$stmtDesbloq) {
+        throw new Exception("Error en prepare: " . $conn->error);
+        sendResponse(0, "Al momento de intentar armar la consulta para desbloquear el proyecto ocurrió un error: ".$conn->error);
+      }
+
+      $stmtDesbloq->bind_param("i", $id);
+      $stmtDesbloq->execute();
+
+      if($stmtDesbloq->affected_rows === 1){
+        $conn->commit();
+        sendResponse(1, "Proyecto desbloqueado con éxito.");
+      }else{
+        $conn->rollback();
+        sendResponse(0, "No fue posible desbloquear el proyecto. Revisar.");
+      }
+    } catch (\Throwable $e) { 
+      $conn->rollback();
+      error_log("Excepción en desbloquear: " . $e->getMessage());
+      handleException($e);
+    }
   }
+
+  //actualizar
+  function actualizarProyectos($data){
+    global $conn;
+
+  }
+
 ?>
