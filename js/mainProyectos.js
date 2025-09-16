@@ -86,7 +86,23 @@ if(formBuscar){
 
 if(formEditar){
   formEditar.addEventListener("submit", async (e) => {
+    e.preventDefault();
     const datos = Object.fromEntries(new FormData(e.target));
+    
+    datos.tecnologias = choicesEdit.getValue(true);
+    if(datos.tecnologias.length == 0){
+      return Swal.fire({
+        title: 'Error por tecnologías',
+        text: "Se requiere que vincules al menos una tecnología al proyecto.",
+        icon: 'info'
+      });
+    }
+
+    const id = document.getElementById("id_editar");
+    if(id){
+      datos.proyecto_id = id.value;
+    }
+
     await editarProyecto(datos);
   });
 }
@@ -129,9 +145,7 @@ const obtenerTecnos = async ()=>{
   mostrarCarga(true);
   const res = await consulta({estado: "true"});
   mostrarCarga(false);
-  if(res.resultado == 0){
-    return console.log("se rompió algo no trajo las tecno");
-  }
+
   tecnologias = res.tecnologias;
   ordenar(tecnologias,"nombre");
 };
@@ -171,52 +185,6 @@ const agregarOptionNuevo = () => {
       'label',
       false
     );
-  });
-};
-
-//crear nuevo proyecto
-const crearProyectos = async (datos) => {
-  const result = await Swal.fire({
-    title: 'Confirmar acción',
-    html: `¿Estás seguro de crear el nuevo proyecto <strong>${datos.nombre}</strong>?`,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Aceptar',
-    confirmButtonColor: "#0D6EFD",
-    cancelButtonText: 'Cancelar'
-  });
-  if (!result.isConfirmed) return;
-  console.log("datos: ", datos)
-  datos.accion      = 'crear';
-  datos.nombre      = datos.nombre.trim();
-  datos.descripcion = datos.descripcion.trim();
-  datos.url         = datos.url.trim();
-
-  mostrarCarga(true);
-  const res = await consultaPOST(datos);
-  mostrarCarga(false);
-
-  if(res.resultado == 0){
-    return Swal.fire({
-      title: 'Error al crear el nuevo proyecto',
-      text: res.msj,
-      icon: 'error'
-    });
-  }
-  Swal.fire({
-    title: 'Nueva Proyecto',
-    text: 'Se creó correctamente el proyecto.',
-    icon: 'success'
-  });
-
-  resetearValores();
-  
-  await getProyectos({ //mandar a buscarlo por filtros
-    estado: "",
-    fecha_desde: datos.fechaDesdeNuevo,
-    fecha_hasta: datos.fechaHastaNuevo,
-    nombre: datos.nombre,
-    proyecto_id: datos.id,
   });
 };
 
@@ -305,7 +273,6 @@ const tbody = document.getElementById("tbody-resultados");
     iconoBloc.setAttribute("data-bs-placement","bottom");
     iconoBloc.setAttribute("data-bs-title",e.inhabilitada == 0 ? "Inhabilitar" : "Habilitar");
     iconoBloc.addEventListener("click", () => {
-      console.log("se agregò el click")
       bloqueoDesbloqueo(e.proyecto_id, (e.inhabilitada == 0));
     });
     span.appendChild(iconoBloc);
@@ -328,6 +295,52 @@ const getProyectos = async(filtros) => {
 
   proyectos = res.proyectos;
   renderizarResultados(proyectos);
+};
+
+//crear nuevo proyecto
+const crearProyectos = async (datos) => {
+  const result = await Swal.fire({
+    title: 'Confirmar acción',
+    html: `¿Estás seguro de crear el nuevo proyecto <strong>${datos.nombre}</strong>?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: "#0D6EFD",
+    cancelButtonText: 'Cancelar'
+  });
+  if (!result.isConfirmed) return;
+
+  datos.accion      = 'crear';
+  datos.nombre      = datos.nombre.trim();
+  datos.descripcion = datos.descripcion.trim();
+  datos.url         = datos.url.trim();
+
+  mostrarCarga(true);
+  const res = await consultaPOST(datos);
+  mostrarCarga(false);
+
+  if(res.resultado == 0){
+    return Swal.fire({
+      title: 'Error al crear el nuevo proyecto',
+      text: res.msj,
+      icon: 'error'
+    });
+  }
+  Swal.fire({
+    title: 'Nueva Proyecto',
+    text: 'Se creó correctamente el proyecto.',
+    icon: 'success'
+  });
+
+  resetearValores();
+  
+  await getProyectos({ //mandar a buscarlo por filtros
+    estado: "",
+    fecha_desde: datos.fechaDesdeNuevo,
+    fecha_hasta: datos.fechaHastaNuevo,
+    nombre: datos.nombre,
+    proyecto_id: res.id,
+  });
 };
 
 //funcion que prepara el modal editar con los datos existentes del proyecto 
@@ -354,7 +367,6 @@ const abrirModalEdicion = (id) => {
     true
   );
 };
-
 
 const bloqueoDesbloqueo = async (id, bloquear) => {
   const project = proyectos.find(e => e.proyecto_id == id);
@@ -394,12 +406,64 @@ const bloqueoDesbloqueo = async (id, bloquear) => {
     confirmButtonText: 'Aceptar',
     confirmButtonColor: "#198754"
   });
-
+  
   await getProyectos({
-    proyecto_id: project.tecnologia_id
+    proyecto_id: project.proyecto_id
   });
 }; 
 
 const editarProyecto = async (datos) => {
   console.log("llego al editar: ", datos)
+  if (Object.keys(datos).length == 0 || !datos){
+      return Swal.fire({
+        title: 'Objeto vacío',
+        text: `Los datos del proyecto que deseas modificar no llegaron.`,
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: "#0D6EFD"
+      });
+    }
+  
+    const result = await Swal.fire({
+      title: 'Confirmar acción',
+      html: `¿Estás seguro de aplicar cambios sobre el proyecto <strong>${datos.nombre}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: "#0D6EFD",
+      cancelButtonText: 'Cancelar'
+    });
+    if (!result.isConfirmed) return;
+  
+    datos.accion = "editar";
+  
+    mostrarCarga(true);
+    const res = await consultaPOST(datos);
+    mostrarCarga(false);
+  
+    if (res.resultado === 0) {
+      return await Swal.fire({
+        title: 'Error al editar',
+        text: res.msj,
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: "#0D6EFD"
+      });
+    }
+  
+    await Swal.fire({
+      title: 'Modificación exitosa',
+      html: `Se modificaron correctamente los datos del proyecto <strong>${datos.nombre}</strong>`,
+      icon: 'success',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: "#198754"
+    });
+  
+    resetearValoresEditar();
+    await getProyectos({
+      id: datos.proyecto_id,
+      nombre: datos.nombre,
+      inhabilitada: datos.inhabilitada
+    });
 };

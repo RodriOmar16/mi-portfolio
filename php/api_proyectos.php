@@ -130,7 +130,6 @@
         $where[]  = "p.fechaHasta <= ?";
         $params[] = $data['fecha_hasta'];
         $types   .= "s";
-
       }
 
       if (!empty($where)) {
@@ -406,7 +405,153 @@
   //actualizar
   function actualizarProyectos($data){
     global $conn;
+    
+    if (empty($data['tecnologias']) || count($data['tecnologias']) === 0) {
+      sendResponse(0, "Se requiere seleccionar al menos una tecnología.");
+    }
 
+    if(!isset($data['descripcion']) || !isset($data['inhabilitada']) || !isset($data['fecha_desde']) ||
+       !isset($data['nombre']) || !isset($data['url_fotos'])){
+      sendResponse(0, "Es necesario completar los campos para poder continuar.");
+    }
+
+    $id          = $data['proyecto_id'];
+    $descripcion = $data['descripcion'];
+    $estado      = $data['inhabilitada'];
+    $nombre      = $data['nombre'];
+    $url         = $data['url_fotos'];
+    $fechaDesde  = $data['fecha_desde'];
+    $fechaHasta  = $data['fecha_hasta'];
+    $tecnologias = $data['tecnologias'];
+
+    if (!empty($data['fecha_hasta']) && strtotime($data['fecha_hasta']) !== false) {
+      if (strtotime($data['fecha_hasta']) <= strtotime($data['fecha_desde'])) {
+        sendResponse(0, "La fecha de finalización debe ser posterior a la fecha de inicio.");
+      }
+    }
+
+
+    try {
+      $conn->autocommit(false);
+      //controlo que no exista ese proyecto creado
+      $sqlControl  = 
+      "SELECT count(*) AS cantidad 
+       FROM proyectos 
+       WHERE proyecto_id  = ?
+         AND nombre       = ? 
+         AND descripcion  = ? 
+         AND fechaDesde   = ? 
+         AND fechaHasta   = ? 
+         AND inhabilitada = ? 
+         AND url_fotos    = ?";
+      $stmtControl = $conn->prepare($sqlControl);
+      
+      if(!$stmtControl){
+        error_log("Prepare failed: ".$conn->error);
+        sendResponse(0, "Ocurrió un error al intentar controlar si ya existe el proyecto: ".$conn->error);
+      }
+      $stmtControl->bind_param("issssis", $id, $nombre, $descripcion, $fechaDesde, $fechaHasta, $estado, $url);
+      $stmtControl->execute();
+
+      $result = $stmtControl->get_result();
+      if(!$result){
+        throw new Exception("Error al obtener resultados: " . $conn->error);
+        sendResponse(0, "Ocurrió un error al obtener resultados del control al actualizar: ".$conn->error);
+      }
+      $row = $result->fetch_assoc();
+      $cantidad = intval($row['cantidad']);
+
+      if($cantidad > 0){
+        sendResponse(0, "El proyecto ya tiene los cambios que deseas grabar.");
+      }
+      
+      //proceso de actualizar el proyecto
+      $sql  = 
+      "UPDATE proyectos
+       SET nombre       = ?, 
+           descripcion  = ?, 
+           fechaDesde   = ?, 
+           fechaHasta   = ?, 
+           inhabilitada = ?,  
+           url_fotos    = ?
+       WHERE proyecto_id = ?";
+      $stmt = $conn->prepare($sql);
+      if(!$stmt){
+        error_log("Prepare failed: ".$conn->error);
+        sendResponse(0, "Error al preparar la consulta para modificar proyecto: ".$conn->error);
+      }
+      $stmt->bind_param("ssssisi", $nombre, $descripcion, $fechaDesde, $fechaHasta, $estado, $url, $id);
+      $stmt->execute();
+
+      $todoOk = true;
+      if ($stmt->affected_rows === 1) {
+        //obtengo las tecnologias que hay en la base ahora
+        $sqlActuales  = "SELECT tecnologia_id FROM proyectos_tecnologia WHERE proyecto_id = ?";
+        $stmtActuales = $conn->prepare($sqlActuales);
+        $stmtActuales->bind_param("i", $id);
+        $stmtActuales->execute();
+        $resultActuales = $stmtActuales->get_result();
+
+        $tecnologiasActuales = [];
+        while ($row = $resultActuales->fetch_assoc()) {
+          $tecnologiasActuales[] = intval($row['tecnologia_id']);
+        }
+
+        //determino la diferencia entre los array
+        $tecnologiasNuevas   = array_diff($tecnologias, $tecnologiasActuales);
+        $tecnologiasEliminar = array_diff($tecnologiasActuales, $tecnologias);
+
+        //inserto los tecnologia_id que vengan a la tabla proyectos_tecnologia
+        if (!empty($tecnologiasNuevas)) {
+          $valoresInsert = [];
+          foreach ($tecnologiasNuevas as $tecnoId) {
+            $valoresInsert[] = "($id, $tecnoId)";
+          }
+          $sqlInsert = "INSERT INTO proyectos_tecnologia(proyecto_id, tecnologia_id) VALUES " . implode(", ", $valoresInsert);
+          if (!$conn->query($sqlInsert)) {
+            $todoOk = false;
+            throw new Exception("Error al insertar tecnologías nuevas: " . $conn->error);
+            sendResponse(0, "Error en la insersión masiva de tecnologias.");
+          }
+        }
+
+        //borro los registros de proyectos_tecnologia que no tengan el tecnologia_id que no vinieron
+        if (!empty($tecnologiasEliminar)) {
+          $placeholders = implode(",", array_fill(0, count($tecnologiasEliminar), "?"));
+          $sqlDelete    = "DELETE FROM proyectos_tecnologia WHERE proyecto_id = ? AND tecnologia_id IN ($placeholders)";
+          $stmtDelete   = $conn->prepare($sqlDelete);
+          if (!$stmtDelete) {
+            error_log("Error al preparar DELETE: " . $conn->error);
+            sendResponse(0, "Error al preparar DELETE: " . $conn->error);
+            $todoOk = false;
+          } else {
+            $typesDelete  = str_repeat("i", count($tecnologiasEliminar) + 1);
+            $paramsDelete = array_merge([$id], $tecnologiasEliminar);
+            $stmtDelete->bind_param($typesDelete, ...$paramsDelete);
+            if (!$stmtDelete->execute()) {
+              error_log("Error al ejecutar DELETE: " . $stmtDelete->error);
+              sendResponse(0, "Error al ejecutar DELETE: " . $stmtDelete->error);
+              $todoOk = false;
+            }
+          }
+        }
+
+        if ($todoOk) {
+          $conn->commit();
+          sendResponse(1, "Se modificó correctamente el proyecto", ["id" => $id]);
+        } else {
+          $conn->rollback();
+          sendResponse(0, "Ocurrió un error al sincronizar las tecnologías.");
+        }
+      } else {
+        $conn->rollback();
+        sendResponse(0, "No se modificó ningún registro. Revisar.");
+      }
+    } catch (\Exception $e) {
+      $conn->rollback();
+      error_log("Excepción atrapada: " . $e->getMessage());
+      handleException($e);
+    }
   }
 
 ?>
