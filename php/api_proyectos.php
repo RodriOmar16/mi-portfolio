@@ -430,7 +430,6 @@
       }
     }
 
-
     try {
       $conn->autocommit(false);
       //controlo que no exista ese proyecto creado

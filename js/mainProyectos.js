@@ -413,7 +413,6 @@ const bloqueoDesbloqueo = async (id, bloquear) => {
 }; 
 
 const editarProyecto = async (datos) => {
-  console.log("llego al editar: ", datos)
   if (Object.keys(datos).length == 0 || !datos){
       return Swal.fire({
         title: 'Objeto vacío',
