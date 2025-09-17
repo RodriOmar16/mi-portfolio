@@ -142,7 +142,10 @@ const renderizarResultados = (lista) => {
 
     const estado   = document.createElement("td");
     estado.setAttribute("data-label", "Estado");
-    estado.textContent = e.ihabilitada == 0 ? 'Activo' : 'Inactiva';
+    const spanChip = document.createElement("span");
+    spanChip.className   = 'badge ' + (e.inhabilitada == 0? 'text-bg-success' : 'text-bg-danger');
+    spanChip.textContent = e.inhabilitada == 0 ? 'Activo' : 'Inactiva';
+    estado.appendChild(spanChip);
     fila.appendChild(estado);
 
     const acciones = document.createElement("td");

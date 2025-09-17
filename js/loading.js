@@ -1,6 +1,6 @@
 const modal = document.getElementById("modal-espera");
 
-window.mostrarCarga = (estado) => {
+export const mostrarCarga = (estado) => {
   if (estado) {
     // Mostrar modal
     modal.classList.add("show");
@@ -23,3 +23,5 @@ window.mostrarCarga = (estado) => {
     if (fondoGris) fondoGris.remove();
   }
 };
+
+window.mostrarCarga = mostrarCarga;
