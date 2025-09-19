@@ -46,8 +46,39 @@
       </div>
     </section>
     <section class="secciones" id="seccion-proyectos">
-      <h2  class="mb-5 ps-4">Mis Proyectos</h2>
-      <div id="proyectos"></div>
+      <h2  class="mb-2 ps-4">Mis Proyectos</h2>
+      <div id="proyectos" class="ms-2">
+        <ul class="nav nav-tabs" id="miTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-java" data-bs-toggle="tab" data-bs-target="#contenido-java" type="button" role="tab">Java</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-vue" data-bs-toggle="tab" data-bs-target="#contenido-vue" type="button" role="tab">Vue</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-react" data-bs-toggle="tab" data-bs-target="#contenido-react" type="button" role="tab">React</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-wp" data-bs-toggle="tab" data-bs-target="#contenido-wp" type="button" role="tab">Wordpress</button>        </li>
+        </ul>
+
+        <div class="tab-content mt-3" id="miTabContent">
+          <div class="tab-pane fade show active" id="contenido-java" role="tabpanel">
+            <!--<p>cosas de java</p>-->
+          </div>
+          <div class="tab-pane fade" id="contenido-vue" role="tabpanel">
+            <p>Contenido de vue</p>
+          </div>
+          <div class="tab-pane fade" id="contenido-react" role="tabpanel">
+            <p>Contenido de react</p>
+          </div>
+          <div class="tab-pane fade" id="contenido-wp" role="tabpanel">
+            <p>Contenido de wp</p>
+          </div>
+        </div>
+      </div>
+      
+
     </section>
     <section class="secciones" id="seccion-sobre-mi">
       <h2 class="mb-5 ps-4">Sobre mí</h2>
@@ -59,7 +90,7 @@
     <section class="secciones" id="seccion-contacto">
       <div class="estructura-contacto">
         <h2 class="mb-lg-4 mb-md-3 mb-sm-2 ps-4">Contáctame</h2>
-        <div class="container">
+        <div class="container mt-2">
           <div class="row ">
             <div class="col-lg-5 col-md-12 contenedor-form-contacto">
               <form action="" method="post">
