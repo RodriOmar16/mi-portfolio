@@ -214,8 +214,10 @@
     $fechaHasta  = $data['fechaHastaNuevo'];
     $tecnologias = $data['tecnologias'];
 
-    if (strtotime($fechaDesde) >= strtotime($fechaHasta)) {
-      sendResponse(0, "La fecha de inicio debe ser estrictamente menor que la fecha de finalización.");
+    if(!empty($fechaHasta)){
+      if (strtotime($fechaDesde) >= strtotime($fechaHasta)) {
+        sendResponse(0, "La fecha de inicio debe ser estrictamente menor que la fecha de finalización.");
+      }
     }
 
     try {

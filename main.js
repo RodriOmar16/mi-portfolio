@@ -24,14 +24,14 @@ await obtenerProyectos();
 
 console.log("proyectos - main de main: ", proyectos)
 
-const crearCarrusel = (url) =>{
+const crearCarrusel = (url) => {
   //foto 1
   const img = document.createElement("img");
   img.setAttribute("src", `./imagenes/${url}/1.png`);
   img.setAttribute("alt","...");
   img.className = "d-block w-100";
 
-  const divImg1 = document.createElement("div");
+  const divImg1     = document.createElement("div");
   divImg1.className = "carousel-item active";
   divImg1.appendChild(img);
 
@@ -41,7 +41,7 @@ const crearCarrusel = (url) =>{
   img2.setAttribute("alt","...");
   img2.className = "d-block w-100";
 
-  const divImg2 = document.createElement("div");
+  const divImg2     = document.createElement("div");
   divImg2.className = "carousel-item";
   divImg2.appendChild(img2);
 
@@ -51,19 +51,19 @@ const crearCarrusel = (url) =>{
   img3.setAttribute("alt","...");
   img3.className = "d-block w-100";
 
-  const divImg3 = document.createElement("div");
+  const divImg3     = document.createElement("div");
   divImg3.className = "carousel-item";
   divImg3.appendChild(img3);
 
   // inner
-  const divInner = document.createElement("div");
+  const divInner    = document.createElement("div");
   divInner.className = "carousel-inner";
   divInner.appendChild(divImg1);
   divInner.appendChild(divImg2);
   divInner.appendChild(divImg3);
   
   //final
-  const divCarr = document.createElement("div");
+  const divCarr     = document.createElement("div");
   divCarr.className = "carousel slide";
   divCarr.setAttribute("data-bs-ride", "carousel");
   divCarr.appendChild(divInner);
@@ -73,36 +73,36 @@ const crearCarrusel = (url) =>{
 
 const construirCardProyectos = async (contenedor, lista) => {
 
-  const row = document.createElement("div");
+  const row     = document.createElement("div");
   row.className = "row";
 
   lista.forEach(e => {
-    const col = document.createElement("div");
+    const col     = document.createElement("div");
     col.className = "col-lg-4 col-md-6 col-sm-12";
 
-    const card = document.createElement("div");
-    card.className = "card";
+    const card     = document.createElement("div");
+    card.className = "card m-2";
 
     const carruselImg = crearCarrusel(e.url_fotos);
-    const divImg = document.createElement("div");
-    divImg.className = "card-img-top";
+    const divImg      = document.createElement("div");
+    divImg.className  = "card-img-top";
     divImg.appendChild(carruselImg);
 
-    const cardBody = document.createElement("div");
+    const cardBody     = document.createElement("div");
     cardBody.className = "card-body";
 
-    const cardTitle = document.createElement("h5");
-    cardTitle.className = "card-title mb-3";
+    const cardTitle       = document.createElement("h5");
+    cardTitle.className   = "card-title mb-3 text-wrap";
     cardTitle.textContent = e.nombre;
 
     const cardText = document.createElement("textarea");
     cardText.setAttribute("rows", "4");
     cardText.setAttribute("disabled", "");
-    cardText.className = "card-text form-control mb-3";
+    cardText.className   = "card-text form-control mb-3";
     cardText.textContent = e.descripcion;
 
-    const cardTextTecno = document.createElement("strong");
-    cardTextTecno.className = "fw-blod";
+    const cardTextTecno       = document.createElement("strong");
+    cardTextTecno.className   = "fw-blod";
     cardTextTecno.textContent = "Técnologias: "+e.tecnologias.map(e=>e.nombre).join(", ");
 
     cardBody.appendChild(cardTitle);

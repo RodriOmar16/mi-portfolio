@@ -92,6 +92,25 @@
 }
 
 /*seccion proyectos*/
+.card-img-top {
+  height: 300px; /* o el alto que prefieras */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-img-top img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+.scrollable-div {
+  max-height: 540px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 
 /*seccion sobre mi*/
 
@@ -143,5 +162,27 @@
   }
   .contenedor-foto-contacto{
     display: none;
+  }
+}
+
+@media(max-width: 500px){
+  /* seccion proyectos */
+  .scrollable-div {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
+
+  .scrollable-div .row {
+    display: inline-flex;
+    flex-wrap: nowrap;
+  }
+
+  .scrollable-div .col-lg-4,
+  .scrollable-div .col-md-6,
+  .scrollable-div .col-sm-12 {
+    flex: 0 0 auto;
+    width: 400px; /* o el ancho que quieras para cada card */
+    margin-right: 1rem;
   }
 }

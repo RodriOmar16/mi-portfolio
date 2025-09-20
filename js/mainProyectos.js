@@ -39,6 +39,8 @@ const choicesEdit = new Choices(selectOptionsEditar, {
 const resetearValores = () => {
   modalNuevoProyecto.classList.add("d-none");
   formNuevo.reset();
+  choices.clearChoices();
+  selectOptionsNuevo.innerHTML = "";
 };
 
 const resetearValoresEditar = () => {
@@ -132,9 +134,9 @@ if(buttonLimpiar){
 
 if(inputBusqueda){
   inputBusqueda.addEventListener('input', (e) => {
-    const texto = e.target.value.toLowerCase();
-    const filtrados = proyectos.filter(e => e.nombre.toLowerCase().includes(texto) || 
-      String(e.proyecto_id).includes(texto) || e.fechaDesdeNuevo.includes(texto)
+    const texto     = e.target.value.toLowerCase();
+    const filtrados = proyectos.filter(e => e.nombre.toLowerCase().includes(texto.toLowerCase()) || 
+      String(e.proyecto_id).includes(texto.toLowerCase()) || e.fecha_desde.includes(texto.toLowerCase())
     );
     renderizarResultados(filtrados);
   });
@@ -169,23 +171,22 @@ agregarOptionsTecnos();
 
 //construcción de options para el modal de nuevo
 const agregarOptionNuevo = () => {
-  const origen = document.getElementById("tecnologias");
+  const origen  = document.getElementById("tecnologias");
   const destino = document.getElementById("tecno-nuevo");
+  
+  destino.innerHTML = "";
+  choices.clearChoices();
 
-  if (destino.options.length === 0) {
-    Array.from(origen.options).forEach(option => {
-      destino.appendChild(option.cloneNode(true));
-    });
-  }
-
-  tecnologias.forEach(e => {
-    choices.setChoices(
-      [{ value: e.tecnologia_id, label: e.nombre }],
-      'value',
-      'label',
-      false
-    );
+  Array.from(origen.options).forEach(option => {
+    destino.appendChild(option.cloneNode(true));
   });
+
+  const opciones = Array.from(destino.options).map(e => ({
+    value: e.value === 'null' ? '' : e.value,
+    label: e.textContent
+  }));
+
+  choices.setChoices(opciones, 'value', 'label', true);
 };
 
 //funcion que hace el renderizado dinamico de los resultados de busqueda
