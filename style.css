@@ -111,7 +111,6 @@
   overflow-x: hidden;
 }
 
-
 /*seccion sobre mi*/
 .seccion-about{
   padding: 15px 15px;
@@ -129,10 +128,27 @@
   display: flex;
   flex-direction: column;
 }
+.seccion-contacto {
+  padding: 20px;
+  overflow: hidden;
+}
 .contenedor-form-contacto{
   display: flex;
   flex-direction: column;
   /*justify-content: center;*/
+}
+.contenedor-foto-contacto img {
+  max-height: 450px;
+  width: 100%;
+  /*object-fit: start;*/
+}
+
+/*footer*/
+.seccion-footer{
+}
+.bg-blue-800 {
+  background-color: #1e3a8a;
+  color: white;
 }
 
 @media (max-width: 993px) {
