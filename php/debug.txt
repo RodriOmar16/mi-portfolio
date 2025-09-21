@@ -1,2 +1,17 @@
 Método: GET
-Datos: {"inhabilitada":"0"}
+Datos: {"inhabilitada":"0"}Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
+Conexión exitosa
