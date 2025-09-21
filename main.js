@@ -22,8 +22,6 @@ const obtenerProyectos = async () => {
 
 await obtenerProyectos();
 
-console.log("proyectos - main de main: ", proyectos)
-
 const crearCarrusel = (url) => {
   //foto 1
   const img = document.createElement("img");

@@ -1,2 +1,2 @@
 Método: GET
-Datos: {"inhabilitada":"0"}
+Datos: {"inhabilitada":"0"}Va a enviar respuesta JSON
