@@ -1,5 +1,6 @@
 //const BASE_URL   = "http://localhost:8080/portfolio/php/";
 const BASE_URL = "https://rodrigo-miranda-portfolio.ct.ws/portfolio/php/";
+console.log(BASE_URL);
 
 export const apiFetch = async (endpoint, options={}) => {
   try {
