@@ -22,7 +22,12 @@ const cargarInfoUser = () => {
 };
 
 export const cargarVistas = async (nombreVista) => {
-  if (!vistasPermitidas.includes(nombreVista)) {
+  if(!nombreVista){
+    return 
+  }
+
+  if (nombreVista && !vistasPermitidas.includes(nombreVista)) {
+    console.log("entro de la funcion")
     contenedor.innerHTML = `<p class="alert alert-warning">Vista <strong>${nombreVista}</strong> no permitida.</p>`;
     return;
   }
@@ -80,15 +85,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  const enlaces = document.querySelectorAll("nav a");
+  const enlaces = document.querySelectorAll("nav a[data-view]");
   enlaces.forEach(e => {
     e.addEventListener("click", (ev) => {
       ev.preventDefault();
+      ev.stopPropagation();
 
       const vista = e.dataset.view;
-      if (!vistasPermitidas.includes(vista)) {
-        contenedor.innerHTML = `<p class="alert alert-warning">Vista <strong>${vista}</strong> no permitida.</p>`;
-        return;
+      if (typeof vista !== "string" || vista.trim() === "" || !vistasPermitidas.includes(vista)) {
+        return; // no hagas nada si no es una vista válida
       }
 
       contenedor.classList.add("fade-out");
@@ -96,6 +101,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         await cargarVistas(vista);
         contenedor.classList.remove("fade-out");
       }, 150);
+
+      const navbarCollapse = document.querySelector(".navbar-collapse");
+      if (navbarCollapse.classList.contains("show")) {
+        const bsCollapse = new bootstrap.Collapse(navbarCollapse, { toggle: true });
+        bsCollapse.hide();
+      }
+
     });
   });
 });

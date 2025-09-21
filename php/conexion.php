@@ -1,15 +1,15 @@
 <?php
-  /*$host    = "localhost";
+  $host    = "localhost";
   $usuario = "root";
   $clave   = "";
-  $bd      = "portfolio";*/
+  $bd      = "portfolio";
 
-  $host    = "sql105.infinityfree.com";
+  /*$host    = "sql105.infinityfree.com";
   $usuario = "if0_39988774";
   $clave   = "qSdjELMelYinI";
-  $bd      = "if0_39988774_portfolio";
+  $bd      = "if0_39988774_portfolio";*/
 
-  $conn = new mysqli($host, $usuario, $clave, $bd/*, 3307*/);
+  $conn = new mysqli($host, $usuario, $clave, $bd, 3307);
   $conn->set_charset("utf8mb4");
 
   if ($conn->connect_error) {
