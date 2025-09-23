@@ -138,8 +138,8 @@
     }
 
     $nombreTecno = $data['nombre_nuevo'];
-    $estado      = $data['estado_nuevo'];
-
+    $estado      = $data['estado_nuevo'] === 'false' ? 1 : 0 ;
+    
     try {
       $conn->autocommit(false);
       //proceso de controlar que no exista ya en la base
