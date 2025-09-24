@@ -114,22 +114,24 @@
         <div class="mt-2">
           <div class="row ">
             <div class="col-lg-5 col-md-12 contenedor-form-contacto">
-              <form action="" method="post">
+              <form action="" method="post" id="form-contacto">
                 <div class="mb-3">
                   <label for="nombreApellido" class="form-label">Nombre y Apellido</label>
-                  <input type="type" class="form-control" id="nombreApellido" aria-describedby="emailHelp" required>
+                  <input type="text" class="form-control" id="nombreApellido" name="nombre" aria-describedby="emailHelp" required>
                   <!--<div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>-->
                 </div>
                 <div class="mb-3">
                   <label for="emailUser" class="form-label">Email</label>
-                  <input type="email" class="form-control" id="emailUser" required>
+                  <input type="email" class="form-control" id="emailUser" name="email" required>
                 </div>
                 <div class="mb-3">
                   <label class="form-label" for="mensaje">Mensaje</label>
-                  <textarea class="form-control" id="mensaje" rows="6" required></textarea>
+                  <textarea class="form-control" id="mensaje" rows="6" name="mensaje" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-outline-primary w-100">Enviar <i class="fa-solid fa-paper-plane"></i></button>
               </form>
+              <div class="mt-3 alert d-none d-flex align-items-center" id="mensajeContacto">
+              </div>
             </div>
             <div class="col-lg-7 col-md-7 contenedor-foto-contacto" >
               <figure>

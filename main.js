@@ -1,11 +1,13 @@
 import { mostrarCarga } from "./js/loading.js";
 import { consultaProyectos } from "./js/services/apiProyectos.js";
+import { apiFetch } from "./js/api.js";
 
 const contenedorJava  = document.getElementById("contenido-java");
 const contenedorVue   = document.getElementById("contenido-vue");
 const contenedorReact = document.getElementById("contenido-react");
 const contenedorWp    = document.getElementById("contenido-wp");
-
+const formContacto    = document.getElementById("form-contacto");
+const mensajeContacto = document.getElementById("mensajeContacto");
 let proyectos = [];
 
 const obtenerProyectos = async () => {
@@ -143,4 +145,58 @@ if (proyectos.length !== 0) {
   await construirCardProyectos(contenedorVue, agrupados['Vue.js']);
   await construirCardProyectos(contenedorReact, agrupados.React);
   await construirCardProyectos(contenedorWp, agrupados.Wordpress);
+}
+
+/* Formulario de contacto */
+const consultaPOST = async (payload) => {
+  try {
+    const data = await apiFetch("enviar_mail.php", {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    return data;
+  } catch (error) {
+    return {
+      resultado: 0,
+      msj: error.message
+    };
+  }
+}
+
+const resetValores = () => {
+  mensajeContacto.classList.add("d-none");
+  formContacto.reset();
+};
+
+if(formContacto){
+  formContacto.addEventListener("submit",async(e) => {
+
+    e.preventDefault();
+    const datos = Object.fromEntries(new FormData(e.target));
+    //return console.log("datos: ", datos)
+
+    mostrarCarga(true);
+    const res = await consultaPOST(datos);
+    mostrarCarga(false);
+
+    mensajeContacto.classList.remove("d-none");
+    const icono = document.createElement("i");
+    const texto = document.createTextNode(res.msj);
+    if(res.resultado == 0){
+      mensajeContacto.classList.remove("alert-success");
+      mensajeContacto.classList.add("alert-danger");
+      icono.className = "fa-solid fa-circle-xmark"; 
+    }else{
+      mensajeContacto.classList.remove("alert-danger");
+      mensajeContacto.classList.add("alert-success");
+      icono.className = "fa-solid fa-circle-check"; 
+    }
+    mensajeContacto.appendChild(icono);
+    mensajeContacto.appendChild(texto);
+
+    setTimeout(() => {
+      resetValores();
+    }, 3000);
+  });
 }
