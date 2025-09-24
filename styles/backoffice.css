@@ -79,7 +79,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 80%;
+  height: 100%;
   width: 100%;
 }
 .contenedor-principal button{
@@ -145,6 +145,10 @@
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
   width: 100%;
   max-width: 900px;
+  /*pone un scroll*/
+  max-height: 90vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .modal-content-tecnologias {
   position: relative;
@@ -199,6 +203,14 @@
     font-size: 1.1rem;
   }
 }
+@media (max-width: 576px) {
+  /*generales*/
+  .modal-content-proyectos {
+    padding: 1rem;
+    max-height: 95vh;
+  }
+}
+
 @media(max-width:450px){
   /*.barra-nav {
     flex-direction: column;

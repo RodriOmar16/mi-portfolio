@@ -3,6 +3,7 @@ import { consultaProyectos } from "./js/services/apiProyectos.js";
 import { apiFetch } from "./js/api.js";
 
 const contenedorJava  = document.getElementById("contenido-java");
+const contenedorHcj   = document.getElementById("contenido-hjc");
 const contenedorVue   = document.getElementById("contenido-vue");
 const contenedorReact = document.getElementById("contenido-react");
 const contenedorWp    = document.getElementById("contenido-wp");
@@ -125,7 +126,8 @@ if (proyectos.length !== 0) {
     Java: [],
     'Vue.js': [],
     React: [],
-    Wordpress: []
+    Wordpress: [],
+    JavaScript: []
   };
 
   // Clasificación
@@ -142,6 +144,7 @@ if (proyectos.length !== 0) {
 
   // Renderizado
   await construirCardProyectos(contenedorJava, agrupados.Java);
+  await construirCardProyectos(contenedorHcj, agrupados.JavaScript);
   await construirCardProyectos(contenedorVue, agrupados['Vue.js']);
   await construirCardProyectos(contenedorReact, agrupados.React);
   await construirCardProyectos(contenedorWp, agrupados.Wordpress);
